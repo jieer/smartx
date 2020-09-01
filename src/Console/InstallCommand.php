@@ -1,6 +1,6 @@
 <?php
 
-namespace Smartwell\Console\Console;
+namespace Smartwell\Console;
 
 use Illuminate\Console\Command;
 

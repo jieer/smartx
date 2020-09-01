@@ -8,11 +8,11 @@ class SmartwellServicesProvider extends ServiceProvider
 {
 
     protected $commands = [
-        Smartwell\Console\InstallCommand::class,
+        Console\InstallCommand::class,
     ];
 
     protected $routeMiddleware = [
-        'jieer.jwt'       => Smartwell\Middleware\SmartWellJWTAuth::class,
+        'jieer.jwt'       => Middleware\SmartWellJWTAuth::class,
     ];
     protected $middlewareGroups = [];
     public function boot()
