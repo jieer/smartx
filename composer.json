@@ -1,14 +1,10 @@
 {
-    //项目名
   "name": "jieer/smartx",
-  //描述
-  "description": "smartwell", 
-  //关键词
-  "keywords": [ 
+  "description": "smartwell",
+  "keywords": [
     "smartwell"
   ],
   "type": "library",
-  //依赖
   "require": {
     "php": ">=7.0",
     "laravel/framework": ">=7.0",
@@ -16,7 +12,6 @@
     "tymon/jwt-auth": "dev-develop"
   },
   "minimum-stability": "dev",
-  //好像是开源协议
   "license": "MIT",
   "authors": [
     {
@@ -24,13 +19,11 @@
       "email": "634652792@qq.com"
     }
   ],
-  //命名空间先关的好像是
   "autoload": {
     "psr-4": {
       "Smartwell\\": "src"
     }
   },
-  //这个是抄的，好像是服务提供者相关的吧
   "extra": {
     "laravel": {
       "providers": [
