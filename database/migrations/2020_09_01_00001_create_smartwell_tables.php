@@ -21,6 +21,7 @@ class CreateSmartwellTables extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists(config('smartwell.database.common_user_table'));
         Schema::create(config('smartwell.database.common_user_table'), function (Blueprint $table) {
             $table->increments('id');
             $table->string('username', 190)->unique();
@@ -31,6 +32,7 @@ class CreateSmartwellTables extends Migration
             $table->string('remember_token', 200)->nullable();
             $table->timestamps();
         });
+        Schema::dropIfExists(config('smartwell.database.wx_app_table'));
         Schema::create(config('smartwell.database.wx_app_table'), function (Blueprint $table) {
             $table->increments('id');
             $table->string('appid', 190)->unique();
@@ -44,6 +46,7 @@ class CreateSmartwellTables extends Migration
             $table->string('remark', 200)->nullable();
             $table->timestamps();
         });
+        Schema::dropIfExists(config('smartwell.database.wx_user_table'));
         Schema::create(config('smartwell.database.wx_user_table'), function (Blueprint $table) {
             $table->increments('id');
             $table->integer('app_id');
@@ -57,9 +60,6 @@ class CreateSmartwellTables extends Migration
             $table->string('label', 200)->nullable();
             $table->tinyInteger('is_black')->default(0);
             $table->timestamps();
-
-            $table->foreignId('app_id')->references('id')->on('smx_wx_app');
-            $table->foreignId('user_id')->references('id')->on('smx_common_user');
         });
     }
 
