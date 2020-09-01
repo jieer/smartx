@@ -6,16 +6,10 @@ use Closure;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use JWTAuth;
 
 class SmartWellJWTAuth
 {
-
-    private $auth;
-
-    public function __construct()
-    {
-        $this->auth = auth(config('smartwell.auth_guard'));
-    }
     /**
      * Handle an incoming request.
      *
@@ -27,10 +21,10 @@ class SmartWellJWTAuth
     {
 
         try {
-            if (! $user = $this->auth->parseToken()->authenticate()) {  //获取到用户数据，并赋值给$user
+            if (! $user = JWTAuth::parseToken()->authenticate()) {  //获取到用户数据，并赋值给$user
                 return response()->json([
                     'code' => 401,
-                    'message' => 'user not found'
+                    'message' => '未查询到此用户'
 
                 ], 404);
             }

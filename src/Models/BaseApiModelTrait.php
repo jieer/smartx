@@ -65,9 +65,9 @@ trait BaseApiModelTrait
             return false;
         }
         if (empty($params['id'])) {
-            $class = new static();
+            $instance = new static();
         } else {
-            $class = static::find($params['id']);
+            $instance = static::find($params['id']);
             if (empty($class)) {
                 return false;
             }
@@ -76,10 +76,10 @@ trait BaseApiModelTrait
             if ($value == '') {
                 continue;
             }
-            $class->$key = $value;
+            $instance->$key = $value;
         }
 
-        $class->save();
+        $instance->save();
         return true;
 
     }

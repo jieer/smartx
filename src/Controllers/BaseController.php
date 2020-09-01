@@ -15,7 +15,7 @@ class BaseController extends Controller
 
     public function message($data) {
         $result = array(
-            "code" => 200,
+            "code" => 0,
             "message" => '',
             'data' => $data,
         );
