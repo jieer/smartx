@@ -8,7 +8,7 @@ class SmartwellServicesProvider extends ServiceProvider
 {
 
     protected $commands = [
-        Console\InstallCommand::class,
+        Smartwell\Console\InstallCommand::class,
     ];
 
     protected $routeMiddleware = [
