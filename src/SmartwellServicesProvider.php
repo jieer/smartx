@@ -34,11 +34,11 @@ class SmartwellServicesProvider extends ServiceProvider
     protected function registerRouteMiddleware()
     {
         foreach ($this->middlewareGroups as $key => $middleware) {
-            $this->app['mini']->middlewareGroup($key, $middleware);
+            $this->app['router']->middlewareGroup($key, $middleware);
         }
 
         foreach ($this->routeMiddleware as $key => $middleware) {
-            $this->app['mini']->aliasMiddleware($key, $middleware);
+            $this->app['router']->aliasMiddleware($key, $middleware);
         }
     }
 }
