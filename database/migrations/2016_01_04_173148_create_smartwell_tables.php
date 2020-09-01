@@ -22,7 +22,7 @@ class CreateSmartwellTables extends Migration
     public function up()
     {
         Schema::create(config('smartwell.database.common_user_table'), function (Blueprint $table) {
-            $table->autoIncrement('id');
+            $table->increments('id');
             $table->string('username', 190)->unique();
             $table->string('phone', 190)->unique();
             $table->string('password', 60);
@@ -32,7 +32,7 @@ class CreateSmartwellTables extends Migration
             $table->timestamps();
         });
         Schema::create(config('smartwell.database.wx_app_table'), function (Blueprint $table) {
-            $table->autoIncrement('id');
+            $table->increments('id');
             $table->string('appid', 190)->unique();
             $table->string('name', 64)->unique();
             $table->string('secret', 190)->unique();
@@ -45,7 +45,7 @@ class CreateSmartwellTables extends Migration
             $table->timestamps();
         });
         Schema::create(config('smartwell.database.wx_user_table'), function (Blueprint $table) {
-            $table->autoIncrement('id');
+            $table->increments('id');
             $table->integer('app_id');
             $table->integer('user_id');
             $table->string('openid', 200)->unique();
