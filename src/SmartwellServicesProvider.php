@@ -12,7 +12,7 @@ class SmartwellServicesProvider extends ServiceProvider
     ];
 
     protected $routeMiddleware = [
-        'jieer.jwt'       => Middleware\SmartWellJWTAuth::class,
+        'jieer.jwt'       => Smartwell\Middleware\SmartWellJWTAuth::class,
     ];
     protected $middlewareGroups = [];
     public function boot()
