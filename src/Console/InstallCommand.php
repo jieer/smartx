@@ -23,7 +23,7 @@ class InstallCommand extends Command
 
     public function initDatabase()
     {
-        $this->call('migrate');
+//        $this->call('migrate');
 
     }
 

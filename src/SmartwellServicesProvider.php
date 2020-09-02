@@ -17,6 +17,7 @@ class SmartwellServicesProvider extends ServiceProvider
     protected $middlewareGroups = [];
     public function boot()
     {
+        $this->loadMigration();
         if ($this->app->runningInConsole()) {
             $this->publishes([__DIR__ . '/../config/smartwell.php' => config_path('smartwell.php'),]);
         }
@@ -29,6 +30,12 @@ class SmartwellServicesProvider extends ServiceProvider
 
         $this->commands($this->commands);
 
+    }
+
+    public function  loadMigration() {
+        if($this->app->runningInConsole()){
+            $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        }
     }
 
     protected function registerRouteMiddleware()
