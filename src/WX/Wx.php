@@ -11,7 +11,6 @@ namespace Smartwell\WX;
 use Smartwell\Models\WxApp;
 use EasyWeChat\Factory;
 use Smartwell\Models\WxUser;
-use Smartwell\Models\User;
 
 class Wx
 {

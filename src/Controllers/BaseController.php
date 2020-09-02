@@ -12,6 +12,12 @@ use Illuminate\Routing\Controller;
 
 class BaseController extends Controller
 {
+    protected $auth;
+
+    public function __construct()
+    {
+        $this->auth = auth('smartwell.auth_guard');
+    }
 
     public function message($data) {
         $result = array(

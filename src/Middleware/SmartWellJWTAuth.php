@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace Smartwell\Middleware;
 
 use Closure;
 use Tymon\JWTAuth\Exceptions\JWTException;
