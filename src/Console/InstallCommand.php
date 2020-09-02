@@ -13,6 +13,7 @@ class InstallCommand extends Command
     protected $description = 'Install the jieer package';
 
 
+
     protected $directory = '';
 
 
@@ -23,8 +24,7 @@ class InstallCommand extends Command
 
     public function initDatabase()
     {
-//        $this->call('migrate');
-
+        $this->call('migrate');
     }
 
 }

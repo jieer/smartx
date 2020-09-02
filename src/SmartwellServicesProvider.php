@@ -15,13 +15,10 @@ class SmartwellServicesProvider extends ServiceProvider
         'jieer.jwt'       => Middleware\SmartWellJWTAuth::class,
     ];
     protected $middlewareGroups = [];
+
     public function boot()
     {
-        $this->loadMigration();
-        if ($this->app->runningInConsole()) {
-            $this->publishes([__DIR__ . '/../config/smartwell.php' => config_path('smartwell.php'),]);
-        }
-
+        $this->registerPublishing();
     }
 
     public function register()
@@ -32,12 +29,6 @@ class SmartwellServicesProvider extends ServiceProvider
 
     }
 
-    public function  loadMigration() {
-        if($this->app->runningInConsole()){
-            $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        }
-    }
-
     protected function registerRouteMiddleware()
     {
         foreach ($this->middlewareGroups as $key => $middleware) {
@@ -46,6 +37,13 @@ class SmartwellServicesProvider extends ServiceProvider
 
         foreach ($this->routeMiddleware as $key => $middleware) {
             $this->app['router']->aliasMiddleware($key, $middleware);
+        }
+    }
+
+    protected  function registerPublishing() {
+        if ($this->app->runningInConsole()) {
+            $this->publishes([__DIR__ . '/../config/smartwell.php' => config_path('smartwell.php')], 'jieer-config');
+            $this->publishes([__DIR__ . '/../database/migrations' => database_path('migrations')], 'jieer-migrations');
         }
     }
 }
