@@ -9,13 +9,18 @@
 namespace Smartwell\Controllers;
 
 use Illuminate\Routing\Controller;
+use Smartwell\Models\WxApp;
 
-class BaseController extends Controller
+class BaseWxController extends Controller
 {
     protected $auth;
+    protected $app_id;
+    protected $wx_app;
 
     public function __construct()
     {
+        $this->app_id = empty(session('app_id')) ? 0:session('app_id');
+        $this->wx_app = WxApp::find($this->app_id);
         $this->auth = auth('smartwell.auth_guard');
     }
 

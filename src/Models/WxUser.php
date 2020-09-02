@@ -90,9 +90,7 @@ class WxUser extends Model
         return [
             'status' => 1,
             'msg' => '该微信未绑定用户',
-            'data' => [
-                'token' => auth(config('smartwell.auth_guard'))->login($user)
-            ]
+            'token' => auth(config('smartwell.auth_guard'))->login($user)
         ];
     }
 }
