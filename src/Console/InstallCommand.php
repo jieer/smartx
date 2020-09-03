@@ -25,6 +25,11 @@ class InstallCommand extends Command
     public function initDatabase()
     {
         $this->call('migrate');
+        $userModel = config('smartwell.models.common_user.model');
+
+        if ($userModel::count() == 0) {
+            $this->call('db:seed', ['--class' => \Smartwell\Models\Seeders\JieerTablesSeeder::class]);
+        }
     }
 
 }
