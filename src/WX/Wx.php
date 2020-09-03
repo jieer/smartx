@@ -29,14 +29,14 @@ class Wx
             'aes_key' => $wx_app->aes_key,
             'response_type' => 'array',
         ];
+
         if ($wx_app->type == 1) {
-            $app = Factory::miniProgram($config);
+            $this->ew_app = Factory::miniProgram($config);
         } elseif($wx_app->type == 2) {
-            $app = Factory::openPlatform($config);
+            $this->ew_app = Factory::openPlatform($config);
         } else {
-            $app = Factory::officialAccount($config);
+            $this->ew_app = Factory::officialAccount($config);
         }
-        $this->ew_app = $app;
         $this->wx_app = $wx_app;
     }
 

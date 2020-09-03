@@ -8,11 +8,11 @@ return [
 
         'connection' => '',
 
-        'common_user_table' => 'smx_common_user',
+        'common_user_table' => 'common_user',
 
-        'wx_app_table' => 'smx_wx_app',
+        'wx_app_table' => 'wx_app',
 
-        'wx_user_table' => 'smx_wx_user',
+        'wx_user_table' => 'wx_user',
 
     ],
     'models' => [

@@ -10,18 +10,32 @@ namespace Smartwell\Controllers;
 
 use Illuminate\Routing\Controller;
 use Smartwell\Models\WxApp;
+use Smartwell\WX\Wx;
 
 class BaseWxController extends Controller
 {
     protected $auth;
-    protected $app_id;
-    protected $wx_app;
+    private $app_id;
+    private $wx_app;
+    private $wx;
 
     public function __construct()
     {
+        $this->auth = auth(config('smartwell.auth_guard'));
+    }
+
+    public function __get($name)
+    {
+        $this->initParams();
+        return $this->$name;
+
+    }
+
+    protected function initParams() {
+
         $this->app_id = empty(session('app_id')) ? 0:session('app_id');
         $this->wx_app = WxApp::find($this->app_id);
-        $this->auth = auth('smartwell.auth_guard');
+        $this->wx = new Wx($this->wx_app);
     }
 
     public function message($data = []) {
@@ -41,4 +55,5 @@ class BaseWxController extends Controller
         );
         return json_encode($result, JSON_UNESCAPED_UNICODE);
     }
+
 }

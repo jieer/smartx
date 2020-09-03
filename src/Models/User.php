@@ -6,18 +6,19 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject as JWTSubject;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
-use App\Models\Backend\AuthUserTrait;
-
-
 
 class User extends Authenticatable implements JWTSubject
 {
-    use AuthUserTrait;
-    public $table='common_user';
+    public $table;
     public $timestamps = false;
     protected $fillable = ['username', 'phone', 'name', 'password'];
     protected $hidden = ['password', 'remember_token'];
 
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->table = config('smartwell.database.wx_app_table');
+    }
 
     public function getJWTIdentifier()
     {
