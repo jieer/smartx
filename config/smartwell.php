@@ -7,7 +7,7 @@ return [
     'database' => [
 
         'connection' => '',
- 
+
         'common_user_table' => 'common_user',
 
         'wx_app_table' => 'wx_app',

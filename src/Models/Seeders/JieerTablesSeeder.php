@@ -4,6 +4,7 @@ namespace Smartwell\Models\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Smartwell\Models\User;
 
 class JieerTablesSeeder extends Seeder
 {
@@ -15,8 +16,8 @@ class JieerTablesSeeder extends Seeder
     public function run()
     {
         // create a user.
-        Administrator::truncate();
-        Administrator::create([
+        User::truncate();
+        User::create([
             'username' => 'smartwell',
             'password' => Hash::make('smartwell'),
             'name'     => '管理员',
