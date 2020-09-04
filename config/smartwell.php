@@ -33,7 +33,21 @@ return [
             'modules' => ['id', 'app_id', 'user_id', 'openid', 'unionid',
                 'nickname', 'headimgurl', 'sex', 'remark', 'label', 'is_black', 'created_at']
         ]
-    ]
+    ],
+    'directory' => [
+        'controller' => app_path('Http/Controllers/Wx'),
+    ],
+
+    'route' => [
+
+        'prefix' => 'wx',
+
+        'namespace' => 'App\\Admin\\Controllers',
+
+        'middleware' => ['api', 'jieer'],
+    ],
+
+
 
 
 ];
