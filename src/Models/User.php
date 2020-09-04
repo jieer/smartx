@@ -17,7 +17,7 @@ class User extends Authenticatable implements JWTSubject
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->table = config('smartwell.database.wx_app_table');
+        $this->table = config('smartwell.database.common_user_table');
     }
 
     public function getJWTIdentifier()
