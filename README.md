@@ -9,4 +9,4 @@ php artisan vendor:publish --provider="SmartX\SmartXServicesProvider"
 <br>
 创建数据库表
 <br>
-php artisan jieer:install
+php artisan smartx:install
