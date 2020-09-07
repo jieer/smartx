@@ -21,7 +21,7 @@ class SmartWellJWTAuth
     {
 
         try {
-            if (! $user = JWTAuth::parseToken()->authenticate()) {  //获取到用户数据，并赋值给$user
+            if (! auth('wx')->user()) {
                 return response()->json([
                     'code' => 401,
                     'message' => '未查询到此用户'
