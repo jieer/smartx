@@ -13,7 +13,7 @@ class SmartXServicesProvider extends ServiceProvider
 
     protected $routeMiddleware = [
         'smartx.app'       => Middleware\WxAppHandle::class,
-        'smartx.jwt'       => Middleware\SmartXWellJWTAuth::class,
+        'smartx.jwt'       => Middleware\SmartXJWTAuth::class,
     ];
     protected $middlewareGroups = [
         'smartx' => [

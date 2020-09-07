@@ -13,7 +13,7 @@ class BaseController extends Controller
 
     public function __construct()
     {
-        $this->auth = auth('smartx.auth_guard');
+        $this->auth = auth(config('smartx.auth_guard'));
     }
 
 }
