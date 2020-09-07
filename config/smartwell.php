@@ -42,7 +42,7 @@ return [
 
         'prefix' => 'wx',
 
-        'namespace' => 'App\\Admin\\Controllers',
+        'namespace' => 'App\\Admin\\Controllers\\Wx',
 
         'middleware' => ['api', 'jieer'],
     ],

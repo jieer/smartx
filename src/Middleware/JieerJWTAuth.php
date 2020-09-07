@@ -1,6 +1,6 @@
 <?php
 
-namespace Smartwell\Middleware;
+namespace Jieer\Middleware;
 
 use Closure;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -8,7 +8,7 @@ use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use JWTAuth;
 
-class SmartWellJWTAuth
+class JieerJWTAuth
 {
     /**
      * Handle an incoming request.

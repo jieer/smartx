@@ -1,6 +1,6 @@
 <?php
 
-namespace Smartwell\Console;
+namespace Jieer\Console;
 
 use Illuminate\Console\Command;
 
@@ -26,16 +26,16 @@ class InstallCommand extends Command
     public function initDatabase()
     {
         $this->call('migrate');
-        $userModel = config('smartwell.models.common_user.model');
+        $userModel = config('jieer.models.common_user.model');
 
         if ($userModel::count() == 0) {
-            $this->call('db:seed', ['--class' => \Smartwell\Models\Seeders\JieerTablesSeeder::class]);
+            $this->call('db:seed', ['--class' => \Jieer\Models\Seeders\JieerTablesSeeder::class]);
         }
     }
 
     public function initJieerDirectory()
     {
-        $this->directory = config('smartwell.directory.controller');
+        $this->directory = config('jieer.directory.controller');
 
         if (is_dir($this->directory)) {
             $this->line("<error>{$this->directory} directory already exists !</error> ");
@@ -53,10 +53,10 @@ class InstallCommand extends Command
 
     protected function createRoutesFile()
     {
-        $file = __DIR__ . '/../routes/'.config('smartwell.auth_guard').'.php';
+        $file = __DIR__ . '/../routes/'.config('jieer.auth_guard').'.php';
 
         $contents = $this->getStub('routes');
-        $this->laravel['files']->put($file, str_replace('DummyNamespace', config('admin.route.namespace'), $contents));
+        $this->laravel['files']->put($file, str_replace('DummyNamespace', config('jieer.route.namespace'), $contents));
         $this->line('<info>Routes file was created:</info> '.str_replace(base_path(), '', $file));
     }
 

@@ -6,7 +6,7 @@
  * Time: 上午10:28
  */
 
-namespace Smartwell\Controllers;
+namespace Jieer\Controllers;
 
 use Illuminate\Routing\Controller;
 
@@ -16,7 +16,7 @@ class BaseController extends Controller
 
     public function __construct()
     {
-        $this->auth = auth('smartwell.auth_guard');
+        $this->auth = auth('jieer.auth_guard');
     }
 
     public function message($data = []) {

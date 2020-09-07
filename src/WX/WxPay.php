@@ -1,8 +1,8 @@
 <?php
 
-namespace Smartwell\WX;
+namespace Jieer\WX;
 
-use Smartwell\Models\WxApp;
+use Jieer\Models\WxApp;
 use EasyWeChat\Factory;
 
 class WxPay

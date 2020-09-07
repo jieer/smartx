@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: smartwell
- * Date: 2018/10/16
- * Time: 上午11:14
- */
 
-namespace Smartwell\Services;
+namespace Jieer\Services;
 
 use DateTime;
 

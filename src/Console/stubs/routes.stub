@@ -1,0 +1,23 @@
+<?php
+
+use Illuminate\Routing\Router;
+
+Jieer::routes();
+
+Route::group([
+    'prefix'        => config('jieer.route.prefix'),
+    'namespace'     => config('jieer.route.namespace'),
+    'middleware'    => config('jieer.route.middleware'),
+], function (Router $router) {
+
+    Route::post('login', 'AuthController@login');
+    Route::post('wxlogin', 'AuthController@wxLogin');
+
+    Route::middleware(['jieer.jwt'])->group(function () {
+        Route::post('logout', 'AuthController@logout');
+
+        Route::post('binduser', 'AuthController@bindUser');
+        Route::post('relievebind', 'AuthController@relieveBind');
+    });
+
+});

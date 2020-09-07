@@ -1,16 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: smartwell
- * Date: 2018/12/13
- * Time: 上午10:28
- */
 
 namespace Smartwell\Controllers;
 
 use Illuminate\Routing\Controller;
-use Smartwell\Models\WxApp;
-use Smartwell\WX\Wx;
+use Jieer\Models\WxApp;
+use Jieer\WX\Wx;
 
 class BaseWxController extends Controller
 {
@@ -21,7 +15,7 @@ class BaseWxController extends Controller
 
     public function __construct()
     {
-        $this->auth = auth(config('smartwell.auth_guard'));
+        $this->auth = auth(config('jieer.auth_guard'));
     }
 
     public function __get($name)

@@ -1,10 +1,10 @@
 <?php
 
-namespace Smartwell\Models\Seeders;
+namespace Jieer\Models\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Smartwell\Models\User;
+use Jieer\Models\User;
 
 class JieerTablesSeeder extends Seeder
 {

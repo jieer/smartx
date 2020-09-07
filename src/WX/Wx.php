@@ -1,16 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: smartwell
- * Date: 2018/10/16
- * Time: 上午11:14
- */
 
-namespace Smartwell\WX;
+namespace Jieer\WX;
 
-use Smartwell\Models\WxApp;
+use Jieer\Models\WxApp;
 use EasyWeChat\Factory;
-use Smartwell\Models\WxUser;
+use Jieer\Models\WxUser;
 
 class Wx
 {

@@ -6,7 +6,7 @@
  * Time: 下午2:07
  */
 
-namespace Smartwell\Models;
+namespace Jieer\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,7 +17,7 @@ class WxUser extends Model
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->table = config('smartwell.database.wx_user_table');
+        $this->table = config('jieer.database.wx_user_table');
     }
 
     public static function bindUser($session, $app_id, $user_id) {
@@ -90,7 +90,7 @@ class WxUser extends Model
         return [
             'status' => 1,
             'msg' => '该微信未绑定用户',
-            'token' => auth(config('smartwell.auth_guard'))->login($user)
+            'token' => auth(config('jieer.auth_guard'))->login($user)
         ];
     }
 }

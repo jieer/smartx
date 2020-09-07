@@ -1,6 +1,6 @@
 <?php
 
-namespace Smartwell\Middleware;
+namespace Jieer\Middleware;
 
 use Closure;
 

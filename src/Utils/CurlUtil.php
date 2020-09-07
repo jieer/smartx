@@ -2,7 +2,7 @@
 /**
  */
 
-namespace Smartwell\Utils;
+namespace Jieer\Utils;
 
 class CurlUtil
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Smartwell;
+namespace Jieer;
 
 use Illuminate\Support\ServiceProvider;
 
-class SmartwellServicesProvider extends ServiceProvider
+class JieerServicesProvider extends ServiceProvider
 {
 
     protected $commands = [
@@ -13,12 +13,11 @@ class SmartwellServicesProvider extends ServiceProvider
 
     protected $routeMiddleware = [
         'jieer.app'       => Middleware\WxAppHandle::class,
-        'jieer.jwt'       => Middleware\SmartWellJWTAuth::class,
+        'jieer.jwt'       => Middleware\JieerWellJWTAuth::class,
     ];
     protected $middlewareGroups = [
         'jieer' => [
             'jieer.app',
-            'jieer.jwt',
         ],
     ];
 
@@ -48,7 +47,7 @@ class SmartwellServicesProvider extends ServiceProvider
 
     protected  function registerPublishing() {
         if ($this->app->runningInConsole()) {
-            $this->publishes([__DIR__ . '/../config/smartwell.php' => config_path('smartwell.php')], 'jieer-config');
+            $this->publishes([__DIR__ . '/../config/jieer.php' => config_path('jieer.php')], 'jieer-config');
             $this->publishes([__DIR__ . '/../database/migrations' => database_path('migrations')], 'jieer-migrations');
         }
     }

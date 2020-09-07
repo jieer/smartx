@@ -2,7 +2,7 @@
   "name": "jieer/smartx",
   "description": "smartwell",
   "keywords": [
-    "smartwell"
+    "smartwell", "jieer"
   ],
   "type": "library",
   "require": {
@@ -27,7 +27,7 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Smartwell\\SmartwellServicesProvider"
+        "Jieer\\JieerServicesProvider"
       ]
     }
   }

@@ -6,7 +6,7 @@
  * Time: 下午2:07
  */
 
-namespace Smartwell\Models;
+namespace Jieer\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,6 +17,6 @@ class WxApp extends Model
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->table = config('smartwell.database.wx_app_table');
+        $this->table = config('jieer.database.wx_app_table');
     }
 }
