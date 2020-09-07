@@ -23,7 +23,7 @@ class SmartXJWTAuth
     {
 
         try {
-            if (! auth(auth('smartx.auth_guard'))->user()) {
+            if (! auth(config('smartx.auth_guard'))->user()) {
                 return $this->errorMessage(401,'未登录');
             }
             return $next($request);
