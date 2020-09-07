@@ -2,8 +2,6 @@
 
 use Illuminate\Routing\Router;
 
-SmartX::routes();
-
 Route::group([
     'prefix'        => config('smartx.route.prefix'),
     'namespace'     => config('smartx.route.namespace'),

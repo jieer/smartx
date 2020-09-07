@@ -7,9 +7,11 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use JWTAuth;
+use SmartX\Controllers\BaseReturnTrait;
 
 class SmartXJWTAuth
 {
+    use BaseReturnTrait;
     /**
      * Handle an incoming request.
      *
@@ -21,35 +23,19 @@ class SmartXJWTAuth
     {
 
         try {
-            if (! auth('wx')->user()) {
-                return response()->json([
-                    'code' => 401,
-                    'message' => '未查询到此用户'
-
-                ], 404);
+            if (! auth(auth('smartx.auth_guard'))->user()) {
+                return $this->errorMessage(401,'未登录');
             }
             return $next($request);
 
         } catch (TokenExpiredException $e) {
-
-            return response()->json([
-                'code' => 401,
-                'message' => 'token 过期' , //token已过期
-            ]);
+            return $this->errorMessage(401,'token 过期');
 
         } catch (TokenInvalidException $e) {
-
-            return response()->json([
-                'code' => 401,
-                'message' => 'token 无效',  //token无效
-            ]);
+            return $this->errorMessage(401,'token 无效');
 
         } catch (JWTException $e) {
-
-            return response()->json([
-                'code' => 401,
-                'message' => '缺少token' , //token为空
-            ]);
+            return $this->errorMessage(401,'缺少token');
 
         }
     }

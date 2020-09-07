@@ -39,21 +39,32 @@ class InstallCommand extends Command
 
         if (is_dir($this->directory)) {
             $this->line("<error>{$this->directory} directory already exists !</error> ");
-
-            return;
+        } else {
+            $this->makeDir('/');
+            $this->line('<info>SmartX directory was created:</info> '.str_replace(base_path(), '', $this->directory));
         }
-
-        $this->makeDir('/');
-        $this->line('<info>Admin directory was created:</info> '.str_replace(base_path(), '', $this->directory));
+        $this->createAuthController();
 
         $this->createRoutesFile();
 
     }
 
+    public function createAuthController()
+    {
+        $authController = $this->directory.'/AuthController.php';
+        $contents = $this->getStub('AuthController');
+
+        $this->laravel['files']->put(
+            $authController,
+            str_replace('DummyNamespace', config('smartx.route.namespace'), $contents)
+        );
+        $this->line('<info>AuthController file was created:</info> '.str_replace(base_path(), '', $authController));
+    }
+
 
     protected function createRoutesFile()
     {
-        $file = __DIR__ . '/../routes/'.config('smartx.auth_guard').'.php';
+        $file = base_path('routes/'.config('smartx.auth_guard').'.php');
 
         $contents = $this->getStub('routes');
         $this->laravel['files']->put($file, str_replace('DummyNamespace', config('smartx.route.namespace'), $contents));

@@ -3,9 +3,11 @@
 namespace SmartX\Middleware;
 
 use Closure;
+use SmartX\Controllers\BaseReturnTrait;
 
 class WxAppHandle
 {
+    use BaseReturnTrait;
     /**
      * Handle an incoming request.
      *
@@ -22,11 +24,7 @@ class WxAppHandle
         }
         $value = $request->session()->get('app_id');
         if (empty($value)) {
-            return response()->json([
-                'code' => 401,
-                'message' => '该应用未认证'
-
-            ], 404);
+            return $this->errorMessage(401,'该应用未认证');
         }
         return $next($request);
     }

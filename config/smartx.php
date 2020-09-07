@@ -17,18 +17,18 @@ return [
     ],
     'models' => [
         'common_user' => [
-            'model' => Smartwell\Models\User::class,
+            'model' => SmartX\Models\User::class,
             'select' => ['id','phone', 'name'],
             'modules' => ['id','username', 'phone', 'name', 'avatar', 'created_at']
         ],
         'wx_app' => [
-            'model' => Smartwell\Models\WxApp::class,
+            'model' => SmartX\Models\WxApp::class,
             'select' => ['id','appid', 'name', 'type'],
             'modules' => ['id','appid', 'name', 'type', 'secret', 'token',
                 'aes_key', 'mch_id', 'notify', 'remark', 'created_at']
         ],
         'wx_user' => [
-            'model' => Smartwell\Models\WxUser::class,
+            'model' => SmartX\Models\WxUser::class,
             'select' => ['id', 'app_id', 'user_id', 'nickname', 'sex'],
             'modules' => ['id', 'app_id', 'user_id', 'openid', 'unionid',
                 'nickname', 'headimgurl', 'sex', 'remark', 'label', 'is_black', 'created_at']
@@ -42,7 +42,7 @@ return [
 
         'prefix' => 'wx',
 
-        'namespace' => 'App\\Admin\\Controllers\\Wx',
+        'namespace' => 'App\\Http\\Controllers\\Wx',
 
         'middleware' => ['api', 'smartx'],
     ],
