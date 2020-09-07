@@ -1,6 +1,6 @@
 {
   "name": "jieer/smartx",
-  "description": "smartwell",
+  "description": "基于laravel的小程序快捷使用接口插件",
   "keywords": [
     "smartwell", "jieer"
   ],
@@ -21,7 +21,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "Smartwell\\": "src"
+      "Jieer\\": "src"
     }
   },
   "extra": {

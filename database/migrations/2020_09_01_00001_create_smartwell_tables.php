@@ -70,8 +70,8 @@ class CreateSmartwellTables extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(config('smartwell.database.wx_user_table'));
-        Schema::dropIfExists(config('smartwell.database.wx_app_table'));
-        Schema::dropIfExists(config('smartwell.database.common_user_table'));
+        Schema::dropIfExists(config('jieer.database.wx_user_table'));
+        Schema::dropIfExists(config('jieer.database.wx_app_table'));
+        Schema::dropIfExists(config('jieer.database.common_user_table'));
     }
 }
