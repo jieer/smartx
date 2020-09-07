@@ -4,14 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSmartwellTables extends Migration
+class CreateSmartXTables extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function getConnection()
     {
-        return config('jieer.database.connection') ?: config('database.default');
+        return config('smartx.database.connection') ?: config('database.default');
     }
 
     /**
@@ -21,8 +21,8 @@ class CreateSmartwellTables extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists(config('jieer.database.common_user_table'));
-        Schema::create(config('jieer.database.common_user_table'), function (Blueprint $table) {
+        Schema::dropIfExists(config('smartx.database.common_user_table'));
+        Schema::create(config('smartx.database.common_user_table'), function (Blueprint $table) {
             $table->increments('id');
             $table->string('username', 190)->unique();
             $table->string('phone', 190)->unique();
@@ -32,8 +32,8 @@ class CreateSmartwellTables extends Migration
             $table->string('remember_token', 200)->nullable();
             $table->timestamps();
         });
-        Schema::dropIfExists(config('jieer.database.wx_app_table'));
-        Schema::create(config('jieer.database.wx_app_table'), function (Blueprint $table) {
+        Schema::dropIfExists(config('smartx.database.wx_app_table'));
+        Schema::create(config('smartx.database.wx_app_table'), function (Blueprint $table) {
             $table->increments('id');
             $table->string('appid', 190)->unique();
             $table->string('name', 64)->unique();
@@ -46,8 +46,8 @@ class CreateSmartwellTables extends Migration
             $table->string('remark', 200)->nullable();
             $table->timestamps();
         });
-        Schema::dropIfExists(config('jieer.database.wx_user_table'));
-        Schema::create(config('jieer.database.wx_user_table'), function (Blueprint $table) {
+        Schema::dropIfExists(config('smartx.database.wx_user_table'));
+        Schema::create(config('smartx.database.wx_user_table'), function (Blueprint $table) {
             $table->increments('id');
             $table->integer('app_id');
             $table->integer('user_id');
@@ -70,8 +70,8 @@ class CreateSmartwellTables extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(config('jieer.database.wx_user_table'));
-        Schema::dropIfExists(config('jieer.database.wx_app_table'));
-        Schema::dropIfExists(config('jieer.database.common_user_table'));
+        Schema::dropIfExists(config('smartx.database.wx_user_table'));
+        Schema::dropIfExists(config('smartx.database.wx_app_table'));
+        Schema::dropIfExists(config('smartx.database.common_user_table'));
     }
 }

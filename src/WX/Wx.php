@@ -1,10 +1,10 @@
 <?php
 
-namespace Jieer\WX;
+namespace SmartX\WX;
 
-use Jieer\Models\WxApp;
+use SmartX\Models\WxApp;
 use EasyWeChat\Factory;
-use Jieer\Models\WxUser;
+use SmartX\Models\WxUser;
 
 class Wx
 {

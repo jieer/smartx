@@ -1,10 +1,10 @@
 <?php
 
-namespace Jieer;
+namespace SmartX;
 
 use Illuminate\Support\ServiceProvider;
 
-class JieerServicesProvider extends ServiceProvider
+class SmartXServicesProvider extends ServiceProvider
 {
 
     protected $commands = [
@@ -12,12 +12,12 @@ class JieerServicesProvider extends ServiceProvider
     ];
 
     protected $routeMiddleware = [
-        'jieer.app'       => Middleware\WxAppHandle::class,
-        'jieer.jwt'       => Middleware\JieerWellJWTAuth::class,
+        'smartx.app'       => Middleware\WxAppHandle::class,
+        'smartx.jwt'       => Middleware\SmartXWellJWTAuth::class,
     ];
     protected $middlewareGroups = [
-        'jieer' => [
-            'jieer.app',
+        'smartx' => [
+            'smartx.app',
         ],
     ];
 
@@ -47,8 +47,8 @@ class JieerServicesProvider extends ServiceProvider
 
     protected  function registerPublishing() {
         if ($this->app->runningInConsole()) {
-            $this->publishes([__DIR__ . '/../config/jieer.php' => config_path('jieer.php')], 'jieer-config');
-            $this->publishes([__DIR__ . '/../database/migrations' => database_path('migrations')], 'jieer-migrations');
+            $this->publishes([__DIR__ . '/../config/smartx.php' => config_path('smartx.php')], 'smartx-config');
+            $this->publishes([__DIR__ . '/../database/migrations' => database_path('migrations')], 'smartx-migrations');
         }
     }
 }

@@ -2,7 +2,7 @@
   "name": "jieer/smartx",
   "description": "基于laravel的小程序快捷使用接口插件",
   "keywords": [
-    "smartwell", "jieer"
+    "smartwell", "jieer", "smartx"
   ],
   "type": "library",
   "require": {
@@ -21,13 +21,13 @@
   ],
   "autoload": {
     "psr-4": {
-      "Jieer\\": "src"
+      "SmartX\\": "src"
     }
   },
   "extra": {
     "laravel": {
       "providers": [
-        "Jieer\\JieerServicesProvider"
+        "SmartX\\SmartXServicesProvider"
       ]
     }
   }

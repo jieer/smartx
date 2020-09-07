@@ -1,6 +1,6 @@
 <?php
 
-namespace Jieer\Services;
+namespace SmartX\Services;
 
 use DateTime;
 

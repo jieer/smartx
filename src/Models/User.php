@@ -1,6 +1,6 @@
 <?php
 
-namespace Jieer\Models;
+namespace SmartX\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject as JWTSubject;
@@ -17,7 +17,7 @@ class User extends Authenticatable implements JWTSubject
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->table = config('jieer.database.common_user_table');
+        $this->table = config('smartx.database.common_user_table');
     }
 
     public function getJWTIdentifier()

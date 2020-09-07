@@ -1,6 +1,6 @@
 <?php
 
-namespace Jieer\Models;
+namespace SmartX\Models;
 
 trait BaseApiModelTrait
 {
@@ -52,7 +52,7 @@ trait BaseApiModelTrait
     }
 
     public function getSelectList() {
-        $modules = config('jieer.models.' . lcfirst(strtolower(basename(str_replace('\\', '/',  __CLASS__)))) . '.select');
+        $modules = config('smartx.models.' . lcfirst(strtolower(basename(str_replace('\\', '/',  __CLASS__)))) . '.select');
         if (empty($modules) || count($modules) < 1) {
             return static::all();
         } else {

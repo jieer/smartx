@@ -1,10 +1,10 @@
 <?php
 
-namespace Smartwell\Controllers;
+namespace SmartX\Controllers;
 
 use Illuminate\Routing\Controller;
-use Jieer\Models\WxApp;
-use Jieer\WX\Wx;
+use SmartX\Models\WxApp;
+use SmartX\WX\Wx;
 
 class BaseWxController extends Controller
 {
@@ -15,7 +15,7 @@ class BaseWxController extends Controller
 
     public function __construct()
     {
-        $this->auth = auth(config('jieer.auth_guard'));
+        $this->auth = auth(config('smartx.auth_guard'));
     }
 
     public function __get($name)

@@ -1,6 +1,6 @@
 <?php
 
-namespace Jieer\Middleware;
+namespace SmartX\Middleware;
 
 use Closure;
 

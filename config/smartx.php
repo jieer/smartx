@@ -44,7 +44,7 @@ return [
 
         'namespace' => 'App\\Admin\\Controllers\\Wx',
 
-        'middleware' => ['api', 'jieer'],
+        'middleware' => ['api', 'smartx'],
     ],
 
 

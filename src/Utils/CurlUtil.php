@@ -2,7 +2,7 @@
 /**
  */
 
-namespace Jieer\Utils;
+namespace SmartX\Utils;
 
 class CurlUtil
 {

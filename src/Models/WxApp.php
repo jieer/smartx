@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: smartwell
- * Date: 2018/12/13
- * Time: 下午2:07
- */
 
-namespace Jieer\Models;
+namespace SmartX\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,6 +11,6 @@ class WxApp extends Model
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->table = config('jieer.database.wx_app_table');
+        $this->table = config('smartx.database.wx_app_table');
     }
 }

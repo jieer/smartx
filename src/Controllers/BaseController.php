@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: smartwell
- * Date: 2018/12/13
- * Time: 上午10:28
- */
 
-namespace Jieer\Controllers;
+namespace SmartX\Controllers;
 
 use Illuminate\Routing\Controller;
 
@@ -16,7 +10,7 @@ class BaseController extends Controller
 
     public function __construct()
     {
-        $this->auth = auth('jieer.auth_guard');
+        $this->auth = auth('smartx.auth_guard');
     }
 
     public function message($data = []) {

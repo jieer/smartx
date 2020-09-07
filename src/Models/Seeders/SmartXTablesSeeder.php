@@ -1,12 +1,12 @@
 <?php
 
-namespace Jieer\Models\Seeders;
+namespace SmartX\Models\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Jieer\Models\User;
+use SmartX\Models\User;
 
-class JieerTablesSeeder extends Seeder
+class SmartXTablesSeeder extends Seeder
 {
     /**
      * Run the database seeds.

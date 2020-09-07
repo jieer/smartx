@@ -1,9 +1,9 @@
 <?php
 
-namespace Jieer\Controllers\Wx;
+namespace SmartX\Controllers\Wx;
 
 use Illuminate\Http\Request;
-use Jieer\Controllers\BaseWxController;
+use SmartX\Controllers\BaseWxController;
 use Validator;
 
 class AuthController extends BaseWxController
