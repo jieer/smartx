@@ -23,6 +23,9 @@ class SmartXServicesProvider extends ServiceProvider
 
     public function boot()
     {
+        if (file_exists($routes = base_path('routes/'.config('smartx.auth_guard').'.php'))) {
+            $this->loadRoutesFrom($routes);
+        }
         $this->registerPublishing();
     }
 
