@@ -111,7 +111,7 @@ class Wx
         if ($res instanceof \EasyWeChat\Kernel\Http\StreamResponse) {
             return $res;
         } else {
-            return $res;
+            return '';
         }
     }
 
@@ -127,7 +127,7 @@ class Wx
         if ($res instanceof \EasyWeChat\Kernel\Http\StreamResponse) {
             return $res;
         } else {
-            return $res;
+            return '';
         }
 
     }

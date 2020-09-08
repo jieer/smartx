@@ -66,8 +66,8 @@ class WxUser extends Model
             self::where('openid', $session['openid'])->where('app_id', $app_id)->update(['user_id' => 0]);
             return $this->errorMessage(401, '该微信未绑定用户');
         }
-        return message([
-            'token' => auth(config('smartx.auth_guard'))->login($user)
+        return $this->message([
+            'access_token' => auth(config('smartx.auth_guard'))->login($user)
         ]);
     }
 

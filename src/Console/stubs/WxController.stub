@@ -1,0 +1,10 @@
+<?php
+
+namespace DummyNamespace;
+
+use SmartX\Controllers\Wx\WxController as WxAuthController;
+
+class WxController extends BaseWxController
+{
+
+}

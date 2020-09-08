@@ -43,12 +43,7 @@ class AuthController extends BaseWxController
             return $this->errorMessage(422, $validator->errors()->first());
         };
 
-        $res = $this->wx->wxLogin($data['code']);
-        if ($res['status'] == 0) {
-            return $this->message(['access_token' => $res['token']]);
-        } else {
-            return $this->errorMessage($res['status'], $res['msg']);
-        }
+        return $this->wx->wxLogin($data['code']);
     }
 
     public function bindUser(Request $request) {
@@ -77,17 +72,12 @@ class AuthController extends BaseWxController
         if ($validator->fails()) {
             return $this->errorMessage(422, $validator->errors()->first());
         };
-        $res = $this->wx->relieveBind($data['code']);
-        if ($res['status'] == 0) {
-            return $this->message([]);
-        } else {
-            return $this->errorMessage($res['status'], $res['msg']);
-        }
+        return $this->wx->relieveBind($data['code']);
     }
 
-    public function userInfo()
+    public function userInfo(Request $request)
     {
-
+        return $this->message($this->auth->user());
     }
 
 
