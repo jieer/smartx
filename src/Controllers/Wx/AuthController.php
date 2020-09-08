@@ -52,7 +52,7 @@ class AuthController extends BaseWxController
     }
 
     public function bindUser(Request $request) {
-        $data = $request->only('code');
+        $data = $request->only('code', 'type');
         $message = [
             'required' => ':attribute 不能为空',
         ];
@@ -63,12 +63,7 @@ class AuthController extends BaseWxController
             return $this->errorMessage(422, $validator->errors()->first());
         };
 
-        $res = $this->wx->bindUser($data['code'], $this->auth->user()->id);
-        if ($res['status'] == 0) {
-            return $this->message([]);
-        } else {
-            return $this->errorMessage($res['status'], $res['msg']);
-        }
+        return $this->wx->bindUser($data['code'], $this->auth->user()->id, empty($data['type']) ? 0:$data['type']);
     }
 
     public function relieveBind(Request $request) {
@@ -88,6 +83,11 @@ class AuthController extends BaseWxController
         } else {
             return $this->errorMessage($res['status'], $res['msg']);
         }
+    }
+
+    public function userInfo()
+    {
+
     }
 
 

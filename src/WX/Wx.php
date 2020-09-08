@@ -38,16 +38,15 @@ class Wx
      * 维信绑定用户(用户已登录)
      *
      */
-    public function bindUser($code, $user_id) {
+    public function bindUser($code, $user_id, $type = 0) {
         $session = $this->ew_app->auth->session($code);
-
         if (array_key_exists('errcode', $session)) {
             return [
                 'status' => $session['errcode'],
                 'msg' => $session['errmsg']
             ];
         }
-        return WxUser::bindUser($session, $this->wx_app->id, $user_id);
+        return (new WxUser())->bindUser($session, $this->wx_app->id, $user_id, $type);
     }
 
     /*

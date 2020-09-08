@@ -4,7 +4,7 @@ namespace SmartX\Controllers;
 
 trait BaseReturnTrait
 {
-    public function message($data = []) {
+    protected function message($data = []) {
         $result = array(
             "code" => 200,
             "message" => '',
@@ -13,7 +13,7 @@ trait BaseReturnTrait
         return json_encode($result, JSON_UNESCAPED_UNICODE);
     }
 
-    public function errorMessage($code, $message = '',$data = []) {
+    protected function errorMessage($code, $message = '',$data = []) {
         $result = array(
             "code" => $code,
             "message" => $message,
