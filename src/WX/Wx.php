@@ -46,7 +46,7 @@ class Wx
                 'msg' => $session['errmsg']
             ];
         }
-        return (new WxUser())->bindUser($session, $this->wx_app->id, $user_id, $type);
+        return WxUser::bindUser($session, $this->wx_app->id, $user_id, $type);
     }
 
     /*
@@ -93,12 +93,7 @@ class Wx
      *     成功则返回一个EasyWeChat\Kernel\Http\StreamResponse实例，可调用save()或saveAs()保存，
      */
     public function getMiniCodeA($path, $optional = []) {
-        $res = $this->ew_app->app_code->get($path, $optional);
-        if ($res instanceof \EasyWeChat\Kernel\Http\StreamResponse) {
-            return $res;
-        } else {
-            return '';
-        }
+        return $this->ew_app->app_code->get($path, $optional);
     }
 
     /*
@@ -106,13 +101,7 @@ class Wx
      *     成功则返回一个EasyWeChat\Kernel\Http\StreamResponse实例，可调用save()或saveAs()保存，
      */
     public function getMiniCodeB($scene, $optional) {
-        $res = $this->ew_app->app_code->getUnlimit($scene, $optional);
-
-        if ($res instanceof \EasyWeChat\Kernel\Http\StreamResponse) {
-            return $res;
-        } else {
-            return '';
-        }
+        return $this->ew_app->app_code->getUnlimit($scene, $optional);
     }
 
 
@@ -121,15 +110,7 @@ class Wx
      *     成功则返回一个EasyWeChat\Kernel\Http\StreamResponse实例，可调用save()或saveAs()保存，
      */
     public function getMiniQrCode($path, $optional) {
-
-        $res = $this->ew_app->app_code->getQrCode($path, $optional);
-
-        if ($res instanceof \EasyWeChat\Kernel\Http\StreamResponse) {
-            return $res;
-        } else {
-            return '';
-        }
-
+        return $this->ew_app->app_code->getQrCode($path, $optional);
     }
 
 

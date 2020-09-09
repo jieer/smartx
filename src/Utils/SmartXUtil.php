@@ -4,10 +4,12 @@
 
 namespace SmartX\Utils;
 
-class CurlUtil
+use Illuminate\Support\Facades\Http;
+
+trait SmartXUtil
 {
     //curl发请求
-    public function auth_request($url, $method = 'GET', $params = [], $headers = []){
+    public function curl_request($url, $method = 'GET', $params = [], $headers = []){
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
@@ -28,4 +30,13 @@ class CurlUtil
             'data' => $r
         ];
     }
+
+    //laravel 自带的发送请求
+    public function send_request($url, $method = 'GET', $params = [], $headers = []) {
+        $method = strtolower($method);
+        $response = Http::withHeader($headers)
+            ->$method($url, $params);
+        return $response;
+    }
+
 }
