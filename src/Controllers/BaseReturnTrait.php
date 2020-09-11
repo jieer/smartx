@@ -10,7 +10,7 @@ trait BaseReturnTrait
             "message" => '',
             'data' => $data,
         );
-        return response()->json($result, JSON_UNESCAPED_UNICODE);
+        return response()->json($result);
     }
 
     public function errorMessage($code, $message = '',$data = []) {
@@ -19,6 +19,6 @@ trait BaseReturnTrait
             "message" => $message,
             'data' => $data,
         );
-        return response()->json($result, JSON_UNESCAPED_UNICODE);
+        return response()->json($result);
     }
 }
