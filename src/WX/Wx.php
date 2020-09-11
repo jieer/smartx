@@ -5,6 +5,7 @@ namespace SmartX\WX;
 use SmartX\Models\WxApp;
 use EasyWeChat\Factory;
 use SmartX\Models\WxUser;
+use SmartX\Models\User;
 use SmartX\Controllers\BaseReturnTrait;
 
 class Wx
@@ -40,12 +41,12 @@ class Wx
      * 维信绑定用户(用户已登录)
      *
      */
-    public function bindUser($code, $user_id, $type = 0) {
+    public function bindUser($code, $user_id) {
         $session = $this->ew_app->auth->session($code);
         if (array_key_exists('errcode', $session)) {
             return $this->errorMessage($session['errcode'], $session['errmsg']);
         }
-        return WxUser::bindUser($session, $this->wx_app->id, $user_id, $type);
+        return WxUser::bindUser($session, $this->wx_app->id, $user_id);
     }
 
     /*
@@ -71,6 +72,25 @@ class Wx
             return $this->errorMessage($session['errcode'], $session['errmsg']);
         }
         return WxUser::relieveBindUser($session, $this->wx_app->id);
+    }
+
+    /*
+     * 绑定手机号
+     */
+    public function completeUser($data) {
+        $session = $this->ew_app->auth->session($data['code']);
+
+        if (array_key_exists('errcode', $session)) {
+            return $this->errorMessage($session['errcode'], $session['errmsg']);
+        }
+        return User::completeUser($session, $this->wx_app->id, $data);
+    }
+
+    /*
+     * 存储用户信息
+     */
+    public function updateWxUserInfo($data) {
+
     }
 
     /*
