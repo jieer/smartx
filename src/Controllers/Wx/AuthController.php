@@ -101,25 +101,37 @@ class AuthController extends BaseWxController
      */
     public function getVerifyCode(Request $request)
     {
-        return User::getVerifyCode();
+        $data = $request->only('phone');
+        $message = [
+            'required' => ':attribute 不能为空',
+        ];
+        $validator = Validator::make($data, [
+            'phone'    => 'required',
+        ], $message);
+        if ($validator->fails()) {
+            return $this->errorMessage(422, $validator->errors()->first());
+        };
+
+        return User::getVerifyCode($data['phone']);
     }
 
     /*
      * 验证验证码
      */
     public function verifyCode(Request $request) {
-        $data = $request->only('verify_code');
+        $data = $request->only('phone', 'verify_code');
         $message = [
             'required' => ':attribute 不能为空',
             'numeric' => ':attribute 必须为数字'
         ];
         $validator = Validator::make($data, [
             'verify_code'    => 'required|numeric',
+            'phone'    => 'required|numeric',
         ], $message);
         if ($validator->fails()) {
             return $this->errorMessage(422, $validator->errors()->first());
         };
-        if (User::verifyCode($data['verify_code'])) {
+        if (User::verifyCode($data)) {
             return $this->message();
         } else {
             return $this->errorMessage(422, '验证码错误');

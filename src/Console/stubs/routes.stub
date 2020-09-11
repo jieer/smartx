@@ -19,7 +19,7 @@ Route::group([
     Route::post('phonelogin', 'AuthController@phoneLogin');
 
 
-    Route::get('getverifycode', 'AuthController@getVerifyCode');
+    Route::post('getverifycode', 'AuthController@getVerifyCode');
     Route::post('verifycode', 'AuthController@verifyCode');
 
     Route::middleware(['smartx.jwt'])->group(function () {

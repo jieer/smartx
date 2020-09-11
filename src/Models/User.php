@@ -87,9 +87,9 @@ class User extends Authenticatable implements JWTSubject
     /*
      * 验证验证码
      */
-    protected function verifyCode($code)
+    protected function verifyCode($data)
     {
-        if ($code == 1234) {
+        if ($data['verify_code'] == 1234) {
             return true;
         } else {
             return false;
@@ -99,7 +99,7 @@ class User extends Authenticatable implements JWTSubject
     /*
      * 获取验证码
      */
-    protected function getVerifyCode()
+    protected function getVerifyCode($phone)
     {
         return $this->message([]);
     }
