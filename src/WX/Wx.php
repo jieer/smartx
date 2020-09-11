@@ -5,9 +5,11 @@ namespace SmartX\WX;
 use SmartX\Models\WxApp;
 use EasyWeChat\Factory;
 use SmartX\Models\WxUser;
+use SmartX\Controllers\BaseReturnTrait;
 
 class Wx
 {
+    use BaseReturnTrait;
     protected $ew_app;
     protected $wx_app;
 
@@ -41,10 +43,7 @@ class Wx
     public function bindUser($code, $user_id, $type = 0) {
         $session = $this->ew_app->auth->session($code);
         if (array_key_exists('errcode', $session)) {
-            return [
-                'status' => $session['errcode'],
-                'msg' => $session['errmsg']
-            ];
+            return $this->errorMessage($session['errcode'], $session['errmsg']);
         }
         return WxUser::bindUser($session, $this->wx_app->id, $user_id, $type);
     }
@@ -56,10 +55,7 @@ class Wx
         $session = $this->ew_app->auth->session($code);
 
         if (array_key_exists('errcode', $session)) {
-            return [
-                'status' => $session['errcode'],
-                'msg' => $session['errmsg']
-            ];
+            return $this->errorMessage($session['errcode'], $session['errmsg']);
         }
 
         return WxUser::wxLogin($session, $this->wx_app->id);
@@ -72,10 +68,7 @@ class Wx
         $session = $this->ew_app->auth->session($code);
 
         if (array_key_exists('errcode', $session)) {
-            return [
-                'status' => $session['errcode'],
-                'msg' => $session['errmsg']
-            ];
+            return $this->errorMessage($session['errcode'], $session['errmsg']);
         }
         return WxUser::relieveBindUser($session, $this->wx_app->id);
     }
