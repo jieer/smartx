@@ -60,12 +60,13 @@ class AuthController extends BaseWxController
      */
     public function phoneLogin(Request $request)
     {
-        $data = $request->only('phone');
+        $data = $request->only('phone', 'verify_code');
         $message = [
             'required' => ':attribute 不能为空',
         ];
         $validator = Validator::make($data, [
             'phone'    => 'required',
+            'verify_code'    => 'required',
         ], $message);
         if ($validator->fails()) {
             return $this->errorMessage(422, $validator->errors()->first());

@@ -72,9 +72,23 @@ class User extends Authenticatable implements JWTSubject
      */
     protected function phoneLogin($data)
     {
+        if (!$this->verifyCode($data['verify_code'])) {
+            return $this->errorMessage(500, '验证码错误');
+        }
         $user = self::where('phone', $data['phone'])->first();
         if (empty($user)) {
-            return $this->errorMessage(500, '该用户不存在');
+            $user = new User();
+            $user->username = $data['phone'];
+            $user->phone = $data['phone'];
+            $user->password = Hash::make($data['phone']);
+            $user->save();
+
+            $user_id = self::insertGetId([
+                'username' => $data['phone'],
+                'phone' => $data['phone'],
+                'password' => Hash::make($data['phone']),
+            ]);
+            $user = self::find($user_id);
         }
         $token = auth(config('smartx.auth_guard'))->login($user);
         if ($token) {
@@ -87,9 +101,9 @@ class User extends Authenticatable implements JWTSubject
     /*
      * 验证验证码
      */
-    protected function verifyCode($data)
+    protected function verifyCode($code)
     {
-        if ($data['verify_code'] == 1234) {
+        if ($code == 1234) {
             return true;
         } else {
             return false;
@@ -99,7 +113,7 @@ class User extends Authenticatable implements JWTSubject
     /*
      * 获取验证码
      */
-    protected function getVerifyCode($phone)
+    protected function getVerifyCode()
     {
         return $this->message([]);
     }
