@@ -10,6 +10,7 @@ use SmartX\Services\CommonService;
 use SmartX\Controllers\BaseReturnTrait;
 use Illuminate\Support\Facades\Hash;
 use SmartX\Models\WxUser;
+use SmartX\Services\VerifyCodeService;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -101,10 +102,10 @@ class User extends Authenticatable implements JWTSubject
     /*
      * 验证验证码
      */
-    protected function verifyCode($code)
+    protected function verifyCode($data)
     {
-        if ($code == 1234) {
-            return true;
+        if (VerifyCodeService::verify($data['action'], $data['phone'], $data['verify_code'])) {
+
         } else {
             return false;
         }
@@ -113,9 +114,12 @@ class User extends Authenticatable implements JWTSubject
     /*
      * 获取验证码
      */
-    protected function getVerifyCode()
+    protected function getVerifyCode($data)
     {
-        return $this->message([]);
+        $verify_code = VerifyCodeService::generate($data['action'], $data['phone'], 5, 6);
+        return $this->message([
+            'verify_code' => $verify_code
+        ]);
     }
 
 

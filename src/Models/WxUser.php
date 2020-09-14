@@ -46,6 +46,7 @@ class WxUser extends Model
     }
 
     protected function wxLogin($session, $app_id) {
+        \Log::info($session);
         $wx_user = self::where('openid', $session['openid'])->where('app_id', $app_id)->first();
         if (empty($wx_user)) {
             $wx_user = new WxUser();
@@ -62,7 +63,7 @@ class WxUser extends Model
         $user = User::find($wx_user->user_id);
         if (empty($user)) {
             return $this->message([
-                'access_token' => 'temp_token'
+                'session_key' => $this->getSessionKey($wx_user->id)
             ]);
         }
         return $this->message([

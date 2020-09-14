@@ -16,4 +16,5 @@ class BaseController extends Controller
         $this->auth = auth(config('smartx.auth_guard'));
     }
 
+
 }

@@ -56,23 +56,27 @@ class AuthController extends BaseWxController
     }
 
     /*
-     * 手机号登录
+     * 手机号登录(微信绑定的手机号)
      */
-    public function phoneLogin(Request $request)
+    public function phoneBind(Request $request)
     {
-        $data = $request->only('phone', 'verify_code');
+        $wx_user = $this->wx_user;
+        if (empty($wx_user)) {
+            return $this->errorMessage(201, '请先登录');
+        }
+        $data = $request->only('encryptedData', 'iv');
         $message = [
             'required' => ':attribute 不能为空',
         ];
         $validator = Validator::make($data, [
-            'phone'    => 'required',
-            'verify_code'    => 'required',
+            'encryptedData'    => 'required',
+            'iv'    => 'required',
         ], $message);
         if ($validator->fails()) {
             return $this->errorMessage(422, $validator->errors()->first());
         };
-
-        return User::phoneLogin($data);
+        $data['session_key'] = $wx_user->session_key;
+        return $this->wx->phoneBind($data);
     }
 
     /*
@@ -102,25 +106,26 @@ class AuthController extends BaseWxController
      */
     public function getVerifyCode(Request $request)
     {
-        $data = $request->only('phone');
+        $data = $request->only('phone', 'action');
         $message = [
             'required' => ':attribute 不能为空',
         ];
         $validator = Validator::make($data, [
             'phone'    => 'required',
+            'action'    => 'required',
         ], $message);
         if ($validator->fails()) {
             return $this->errorMessage(422, $validator->errors()->first());
         };
 
-        return User::getVerifyCode($data['phone']);
+        return User::getVerifyCode($data);
     }
 
     /*
      * 验证验证码
      */
     public function verifyCode(Request $request) {
-        $data = $request->only('phone', 'verify_code');
+        $data = $request->only('phone', 'verify_code', 'action');
         $message = [
             'required' => ':attribute 不能为空',
             'numeric' => ':attribute 必须为数字'
@@ -128,6 +133,7 @@ class AuthController extends BaseWxController
         $validator = Validator::make($data, [
             'verify_code'    => 'required|numeric',
             'phone'    => 'required|numeric',
+            'action'    => 'required',
         ], $message);
         if ($validator->fails()) {
             return $this->errorMessage(422, $validator->errors()->first());

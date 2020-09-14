@@ -5,8 +5,10 @@ namespace SmartX\WX;
 use SmartX\Models\WxApp;
 use EasyWeChat\Factory;
 use SmartX\Models\WxUser;
+use SmartX\Models\Id;
 use SmartX\Models\User;
 use SmartX\Controllers\BaseReturnTrait;
+use Illuminate\Support\Facades\Hash;
 
 class Wx
 {
@@ -37,6 +39,14 @@ class Wx
         $this->wx_app = $wx_app;
     }
 
+    protected function setSession($wxuser) {
+        $wx_id = $wxuser->id;
+        $session_key = $wxuser->session_key;
+        $timeout = time() + 86400;
+        $this->sessionKey = encrypt("{$wx_id}\t{$session_key}\t{$timeout}");
+        return $this->sessionKey;
+    }
+
     /*
      * 维信绑定用户(用户已登录)
      *
@@ -47,6 +57,61 @@ class Wx
             return $this->errorMessage($session['errcode'], $session['errmsg']);
         }
         return WxUser::bindUser($session, $this->wx_app->id, $user_id);
+    }
+
+    /*
+     * 微信手机绑定
+     *
+     */
+    public function phoneBind($data) {
+        $decrypted = $this->ew_app->encryptor->decryptData($data['session_key'], $data['iv'], $data['encryptedData']);
+        $wx_user = WxUser::where('session_key', $data['session_key'])->first();
+        if (empty($wx_user)) {
+            return $this->errorMessage(201, "未登录，请先登录");
+        }
+        $phone = $decrypted['phoneNumber'];
+        $countryCode = $decrypted['countryCode'];
+
+        if (empty($phone)) {
+            return $this->errorMessage(201, '获取用户出错');
+        }
+        $user_id = Id::getId($phone);
+        if ($user_id == 0) {
+            return $this->errorMessage(500, "绑定失败");
+        }
+        $new_user = User::find($wx_user->user_id);
+        if (!empty($new_user) && $new_user->id == $user_id) {
+            return $this->message([
+                'token' => auth(config('smartx.auth_guard'))->login($new_user)
+            ], WxUser::setSession($wx_user));
+        }
+        $user = User::where('phone', $phone)->first();
+        if ($user) {
+            return $this->errorMessage(422, "手机号已经绑定过其他用户, 请更换手机号");
+        }
+        $user = User::find($user_id);
+        if ($user) {
+            return $this->errorMessage(422, "绑定失败, 手机号被占用");
+        }
+
+
+        $new_user = new User;
+        $new_user->id = $user_id;
+        $new_user->name    = $wx_user->nickname;
+        $new_user->avatar    = str_replace('http://', 'https://', $wx_user->headimgurl);
+        $new_user->created_at = date('Y-m-d H:i:s');
+        $new_user->phone = $phone;
+        $new_user->username = $phone;
+        $new_user->password = Hash::make($phone);
+        $new_user->save();
+        WxUser::where('id', $wx_user->id)->update([
+            'user_id' => $new_user->id,
+            'country_code' => $countryCode
+        ]);
+        return $this->message([
+            'token' => auth(config('smartx.auth_guard'))->login($new_user),
+            'sessionKey'=> WxUser::setSession($wx_user)
+        ]);
     }
 
     /*

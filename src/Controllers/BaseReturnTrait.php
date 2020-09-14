@@ -4,11 +4,12 @@ namespace SmartX\Controllers;
 
 trait BaseReturnTrait
 {
-    public function message($data = []) {
+    public function message($data = [], $sessionKey = '') {
         $result = array(
             "code" => 200,
             "message" => '',
             'data' => $data,
+            'sessionKey' => $sessionKey,
         );
         return response()->json($result);
     }
