@@ -63,14 +63,4 @@ class BaseWxController extends BaseController
         return false;
     }
 
-    public function message($data = [], $sessionKey = '') {
-        $result = array(
-            "code" => 200,
-            "message" => '',
-            'data' => $data,
-            'sessionKey' => $this->sessionKey,
-        );
-        return response()->json($result);
-    }
-
 }

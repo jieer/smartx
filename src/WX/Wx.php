@@ -82,7 +82,9 @@ class Wx
         $new_user = User::find($wx_user->user_id);
         if (!empty($new_user) && $new_user->id == $user_id) {
             return $this->message([
-                'token' => auth(config('smartx.auth_guard'))->login($new_user)
+                'token' => auth(config('smartx.auth_guard'))->login($new_user),
+                'ttl' => User::getTTL(),
+                'refresh_ttl' => User::getRefreshTTL(),
             ], WxUser::setSession($wx_user));
         }
         $user = User::where('phone', $phone)->first();
@@ -110,8 +112,37 @@ class Wx
         ]);
         return $this->message([
             'token' => auth(config('smartx.auth_guard'))->login($new_user),
-            'sessionKey'=> WxUser::setSession($wx_user)
-        ]);
+            'ttl' => User::getTTL(),
+            'refresh_ttl' => User::getRefreshTTL(),
+        ], WxUser::setSession($wx_user));
+    }
+
+
+    /*
+     * 完善用户信息
+     */
+    public function completeUser($data) {
+        $decrypted = $this->ew_app->encryptor->decryptData($data['session_key'], $data['iv'], $data['encryptedData']);
+        if (empty($decrypted) || empty($decrypted['openId'])) {
+            return $thi->errorMessage(500, '完善用户信息失败, 连接微信出错');
+        }
+        $wx_user = WxUser::where('session_key', $data['session_key'])->first();
+        $wx_user->nickname = $decrypted['nickName'];
+        $wx_user->city = $decrypted['city'];
+        $wx_user->province = $decrypted['province'];
+        $wx_user->country = $decrypted['country'];
+        $wx_user->headimgurl = $decrypted['avatarUrl'];
+        $wx_user->unionid = $decrypted['unionId'];
+        $wx_user->save();
+        $user = User::where('id', $wx_user->user_id)->first();
+        if (empty($user->name)) {
+            $user->name = $decrypted['nickName'];
+        }
+        if (empty($user->avatar)) {
+            $user->avatar = $decrypted['avatarUrl'];
+        }
+        $user->save();
+        return $this->message();
     }
 
     /*
@@ -127,6 +158,26 @@ class Wx
         return WxUser::wxLogin($session, $this->wx_app->id);
     }
 
+    public function userInfo() {
+        $user = auth(config('smartx.auth_guard'))->user();
+        $wx_users = WxUser::where('user_id', $user->id)->get(['openid', 'unionid', 'nickname', 'headimgurl', 'city', 'province', 'country']);
+        if (!empty($wx_users) && count($wx_users) > 0) {
+            foreach ($wx_users as $wx_user) {
+                if ($wx_user->sex == 1) {
+                    $wx_user->sex = '男';
+                } elseif ($wx_user->sex == 2) {
+                    $wx_user->sex = '女';
+                } else {
+                    $wx_user->sex = '未知';
+                }
+            }
+            $user->wx_user = $wx_users;
+        } else {
+            $user->wx_user = [];
+        }
+        return $this->message($user);
+    }
+
     /*
      * 微信解绑(用户已登录)
      */
@@ -139,17 +190,6 @@ class Wx
         return WxUser::relieveBindUser($session, $this->wx_app->id);
     }
 
-    /*
-     * 绑定手机号
-     */
-    public function completeUser($data) {
-        $session = $this->ew_app->auth->session($data['code']);
-
-        if (array_key_exists('errcode', $session)) {
-            return $this->errorMessage($session['errcode'], $session['errmsg']);
-        }
-        return User::completeUser($session, $this->wx_app->id, $data);
-    }
 
     /*
      * 存储用户信息

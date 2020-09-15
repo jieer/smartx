@@ -16,6 +16,11 @@ class CommonService
         return $str;
     }
 
+    public static function getNonceNo() {
+        $rand = substr(implode(NULL, array_map('ord', str_split(substr(uniqid(), 7, 13), 1))),0,12);
+        return $rand;
+    }
+
     //格式化时间,格式为2016-07-07T23:48:43Z
     public static function gmt_iso8601($time)
     {

@@ -3,11 +3,8 @@
 namespace SmartX\Middleware;
 
 use Closure;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-use Tymon\JWTAuth\Exceptions\TokenInvalidException;
-use JWTAuth;
 use SmartX\Controllers\BaseReturnTrait;
+use SmartX\Models\WxUser;
 
 class UserHandel
 {
@@ -23,22 +20,28 @@ class UserHandel
     {
 
         try {
-            if (! JWTAuth::getToken()) {
-                return $this->errorMessage(401,'未登录');
-            } else if (JWTAuth::getToken() == 'temp_token') {
-                return $this->errorMessage(401,'您未绑定手机号，没有权限访问');
+            $sessionKey = $request->header('SESSIONKEY');
+            if (empty($sessionKey)) {
+                return $this->errorMessage(401, '未登录，缺少sessionKey');
+            }
+            $str = decrypt($sessionKey);
+            if (empty($str)) {
+                return $this->errorMessage(401, '未登录, 缺少sessionKey');
+            }
+            list($wx_id, $session_key, $timeout) = explode("\t", $str);
+            if (empty($wx_id) || empty($session_key) || ($timeout < time())) {
+                $request->header('SESSIONKEY', '');
+                return $this->errorMessage(401, '未登录, sessionKey 过期');
+            }
+            $wx_user = WxUser::find($wx_id);
+
+            if (empty($wx_user)) {
+                return $this->errorMessage(401, '未登录, sessionKey 无效');
             }
             return $next($request);
 
-        } catch (TokenExpiredException $e) {
-            return $this->errorMessage(401,'token 过期');
-
-        } catch (TokenInvalidException $e) {
-            return $this->errorMessage(401,'token 无效');
-
-        } catch (JWTException $e) {
-            return $this->errorMessage(401,'缺少token');
-
+        } catch (Exception $e) {
+            return $this->errorMessage(401,'未登录, sessionKey 无效');
         }
     }
 }

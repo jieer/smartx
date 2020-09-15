@@ -5,11 +5,12 @@
 namespace SmartX\Utils;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Client\PendingRequest;
 
 trait SmartXUtil
 {
     //curl发请求
-    public function curl_request($url, $method = 'GET', $params = [], $headers = []){
+    public static function curl_request($method = 'GET', $url = '', $params = [], $headers = []){
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
@@ -32,9 +33,9 @@ trait SmartXUtil
     }
 
     //laravel 自带的发送请求
-    public function send_request($url, $method = 'GET', $params = [], $headers = []) {
+    public static function send_request($url, $method = 'GET', $params = [], $headers = []) {
         $method = strtolower($method);
-        $response = Http::withHeader($headers)
+        $response = PendingRequest::withHeader($headers)
             ->$method($url, $params);
         return $response;
     }
