@@ -24,18 +24,18 @@ class SmartXJWTAuth
 
         try {
             if (! auth(config('smartx.auth_guard'))->user()) {
-                return $this->errorMessage(401,'未登录');
+                return $this->errorMessage(401,'访问受限，未认证');
             }
             return $next($request);
 
         } catch (TokenExpiredException $e) {
-            return $this->errorMessage(401,'token 过期');
+            return $this->errorMessage(401,'访问受限，token 过期');
 
         } catch (TokenInvalidException $e) {
-            return $this->errorMessage(401,'token 无效');
+            return $this->errorMessage(401,'访问受限，token 无效');
 
         } catch (JWTException $e) {
-            return $this->errorMessage(401,'缺少token');
+            return $this->errorMessage(401,'访问受限，缺少token');
 
         }
     }

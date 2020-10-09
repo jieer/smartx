@@ -11,12 +11,12 @@ use SmartX\Controllers\BaseReturnTrait;
 use Illuminate\Support\Facades\Hash;
 use SmartX\Models\WxUser;
 use SmartX\Services\VerifyCodeService;
+use Tymon\JWTAuth\Factory;
 
 class User extends Authenticatable implements JWTSubject
 {
     use BaseReturnTrait;
     public $table;
-    public $timestamps = false;
     protected $fillable = ['username', 'phone', 'name', 'password'];
     protected $hidden = ['password', 'remember_token'];
 
@@ -71,11 +71,8 @@ class User extends Authenticatable implements JWTSubject
     /*
      * 手机号登录
      */
-    protected function phoneLogin($data)
+    protected function phoneLogin($session_key, $data)
     {
-        if (!$this->verifyCode($data['verify_code'])) {
-            return $this->errorMessage(500, '验证码错误');
-        }
         $user = self::where('phone', $data['phone'])->first();
         if (empty($user)) {
             $user = new User();
@@ -104,11 +101,8 @@ class User extends Authenticatable implements JWTSubject
      */
     protected function verifyCode($data)
     {
-        if (VerifyCodeService::verify($data['action'], $data['phone'], $data['verify_code'])) {
-
-        } else {
-            return false;
-        }
+        $x = VerifyCodeService::verify($data['action'], $data['phone'], $data['verify_code']);
+        return $x;
     }
 
     /*
@@ -167,5 +161,25 @@ class User extends Authenticatable implements JWTSubject
         }
     }
 
+    protected function getTTL() {
+        $ttl = empty(config('jwt.ttl')) ? 60:config('jwt.ttl');
+        return (int)$ttl * 60;
+    }
+
+    protected function getRefreshTTL() {
+        $refresh_ttl = empty(config('jwt.refresh_ttl')) ? 20160:config('jwt.refresh_ttl');
+        return (int)$refresh_ttl * 60;
+    }
+
+    public static function getNameById($user_id) {
+        if (empty($user_id)) {
+            return '';
+        }
+        $user = self::find($user_id);
+        if (empty($user)) {
+            return '';
+        }
+        return $user->name;
+    }
 
 }

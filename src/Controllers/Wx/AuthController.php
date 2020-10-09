@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use SmartX\Controllers\BaseWxController;
 use Validator;
 use SmartX\Models\User;
+use SmartX\Models\WxUser;
+use App\Models\Content\SmxUserFollow;
+use App\Smx\Services\WXService;
+use App\Models\Sess;
 
 class AuthController extends BaseWxController
 {
@@ -83,21 +87,22 @@ class AuthController extends BaseWxController
      * 完善用户
      */
     public function completeUser(Request $request) {
-        $data = $request->only('username', 'phone', 'password', 'name', 'code');
+        $wx_user = $this->wx_user;
+        if (empty($wx_user)) {
+            return $this->errorMessage(201, '请先登录');
+        }
+        $data = $request->only('encryptedData', 'iv');
         $message = [
             'required' => ':attribute 不能为空',
         ];
         $validator = Validator::make($data, [
-            'phone'    => 'required',
-            'code'    => 'required',
-            'username'    => 'required',
-            'password'    => 'required',
-            'name'    => 'required',
+            'encryptedData'    => 'required',
+            'iv'    => 'required',
         ], $message);
         if ($validator->fails()) {
             return $this->errorMessage(422, $validator->errors()->first());
         };
-
+        $data['session_key'] = $wx_user->session_key;
         return $this->wx->completeUser($data);
     }
 
@@ -150,7 +155,7 @@ class AuthController extends BaseWxController
      * 微信登录
      */
     public function wxLogin(Request $request) {
-        $data = $request->only('code');
+        $data = $request->only('code', 'inviter_id');
         $message = [
             'required' => ':attribute 不能为空',
         ];
@@ -161,7 +166,7 @@ class AuthController extends BaseWxController
             return $this->errorMessage(422, $validator->errors()->first());
         };
 
-        return $this->wx->wxLogin($data['code']);
+        return $this->wx->wxLogin($data);
     }
 
     /*
@@ -201,7 +206,7 @@ class AuthController extends BaseWxController
 
     public function userInfo(Request $request)
     {
-        return $this->message($this->auth->user());
+        return $this->wx->userInfo();
     }
 
     public function saveUserInfo(Request $request) {
@@ -218,6 +223,68 @@ class AuthController extends BaseWxController
         return $this->wx->relieveBind($data['code']);
     }
 
+    public function otherUserInfo(Request $request)
+    {
+        $id = $request->input('user_id');
+
+        $user = User::find($id, ['id','level','name', 'avatar', 'can_follow']);
+
+        if (empty($user)) {
+            return $this->message($user);
+        }
+
+        if ($this->auth->user()->id == $id) {
+            $user->is_own = 1;
+        } else {
+            $user->is_own = 0;
+        }
+
+        $user->follow_count = SmxUserFollow::getUserFollowCount($id);
+        $user->fans_count = SmxUserFollow::getFollowUserCount($id);
+        $follow = SmxUserFollow::where('user_id', $this->auth->user()->id)->where('source_user_id', $id)->first();
+        if (!empty($follow) || $this->auth->user()->id == $id) {
+            $user->is_follow = 1;
+        } else {
+            $user->is_follow = 0;
+        }
+        return $this->message($user);
+
+    }
+
+    public function follow(Request $request) {
+        $data = $request->only('user_id');
+        $message = [
+            'user_id' => ':attribute 不能为空',
+        ];
+        $validator = Validator::make($data, [
+            'user_id'    => 'required',
+        ], $message);
+        if ($validator->fails()) {
+            return $this->errorMessage(422, $validator->errors()->first());
+        };
+        $user = User::find($data['user_id']);
+        if (empty($user) || $user->id == $this->auth->user()->id) {
+            return $this->errorMessage(500, '你要关注的用户不存在');
+        }
+        $user_follow = SmxUserFollow::where('user_id', $this->auth->user()->id)
+            ->where('source_user_id', $data['user_id'])
+            ->first();
+        if (empty($user_follow)) {
+            $rows = SmxUserFollow::insert([
+                'user_id' => $this->auth->user()->id,
+                'source_user_id' => $data['user_id']
+            ]);
+        } else {
+            $rows = SmxUserFollow::where('user_id', $this->auth->user()->id)
+                ->where('source_user_id', $data['user_id'])
+                ->delete();
+        }
+        if ($rows > 0) {
+            return $this->message();
+        }
+        return $this->errorMessage(500, '变更失败');
+    }
+
 
 
     public function logout()
@@ -226,4 +293,70 @@ class AuthController extends BaseWxController
 
         return $this->message(['message' => '已退出登录']);
     }
+
+    public function officialAccountLogin(Request $request)
+    {
+        $token = time().rand(100000,999999);
+        $sess = new Sess;
+        $sess->token = $token;
+        $sess->addtime = date('Y-m-d H:i:s');
+        $sess->status = 0;
+        $sess->app_id = $this->app_id;
+        $sess->save();
+
+        $url = $this->wx->getCodeUrl(0, 'action=login&session_id=' . $token);
+
+        return $this->message(['url' => $url, 'session_id' => $sess->id]);
+    }
+
+    public function officialShouquan(Request $request) {
+        $data = $request->only('session_id');
+        $message = [
+            'required' => ':attribute 不能为空',
+        ];
+        $validator = Validator::make($data, [
+            'session_id'    => 'required',
+        ], $message);
+        if ($validator->fails()) {
+            return $this->errorMessage(422, $validator->errors()->first());
+        };
+
+        $sess = Sess::find($data['session_id']);
+        if (empty($sess)) {
+            return $this->errorMessage(410, '二维码无效');
+        }
+        if (!empty($sess->logintime)) {
+            Sess::where('id', $sess->id)->update(['status' => 9]);
+            return $this->errorMessage(410, '二维码无效');
+        }
+        if ((time() - strtotime($sess->addtime) - 1800) > 0) {
+            Sess::where('id', $sess->id)->update(['status' => 2]);
+            return $this->errorMessage(410, '二维码已过期');
+        }
+        if ($sess->status == 1) {
+            $wx_user = WxUser::find($sess->wx_user_id);
+            if (empty($wx_user)) {
+                return $this->errorMessage(500, '微信用户未创建');
+            }
+            $user = User::find($wx_user->user_id);
+            if (empty($user)) {
+                return $this->message([], WxUser::setSession($wx_user));
+            }
+            Sess::where('id', $sess->id)->update(['userid' => $user->id]);
+            return $this->message([
+                'access_token' => auth(config('smartx.auth_guard'))->login($user),
+                'ttl' => User::getTTL(),
+                'refresh_ttl' => User::getRefreshTTL(),
+                'user' => $user
+            ], WxUser::setSession($wx_user)
+            );
+        } elseif($sess->status == 0) {
+            return $this->errorMessage(202, '尚未扫码');
+        } else {
+            return $this->errorMessage(410, '无法使用');
+        }
+
+    }
+
+
 }
