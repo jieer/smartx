@@ -101,8 +101,15 @@ class User extends Authenticatable implements JWTSubject
      */
     protected function verifyCode($data)
     {
-        $x = VerifyCodeService::verify($data['action'], $data['phone'], $data['verify_code']);
-        return $x;
+        $result = VerifyCodeService::verify($data['action'], $data['phone'], $data['verify_code']);
+        if ($result === 1) {
+            return $this->message((object)null);
+        } elseif ($result === 2) {
+            return $this->errorMessage(400, '验证码过期');
+        } else {
+            return $this->errorMessage(400, '验证码无效');
+        }
+
     }
 
     /*
@@ -110,10 +117,10 @@ class User extends Authenticatable implements JWTSubject
      */
     protected function getVerifyCode($data)
     {
-        $verify_code = VerifyCodeService::generate($data['action'], $data['phone'], 5, 6);
-        return $this->message([
-            'verify_code' => $verify_code
-        ]);
+        $verify_code = VerifyCodeService::generate($data['action'], $data['phone'], 300, 6, 1);
+        //发送验证码
+//        return $this->message((object)null);
+        return $this->message(['veridy_code' => $verify_code]);
     }
 
 

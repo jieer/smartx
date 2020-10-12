@@ -4,12 +4,16 @@ namespace SmartX\Controllers\Wx;
 
 use Illuminate\Http\Request;
 use SmartX\Controllers\BaseWxController;
+use SmartX\Services\CommonService;
 use Validator;
 use SmartX\Models\User;
 use SmartX\Models\WxUser;
 use App\Models\Content\SmxUserFollow;
 use App\Smx\Services\WXService;
 use App\Models\Sess;
+use SmartX\Services\VerifyCodeService;
+use SmartX\Models\Id;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends BaseWxController
 {
@@ -122,6 +126,9 @@ class AuthController extends BaseWxController
         if ($validator->fails()) {
             return $this->errorMessage(422, $validator->errors()->first());
         };
+        if (!CommonService::verifPhone($data['phone'])) {
+            return $this->errorMessage(422, '无效的手机号');
+        };
 
         return User::getVerifyCode($data);
     }
@@ -143,11 +150,7 @@ class AuthController extends BaseWxController
         if ($validator->fails()) {
             return $this->errorMessage(422, $validator->errors()->first());
         };
-        if (User::verifyCode($data)) {
-            return $this->message();
-        } else {
-            return $this->errorMessage(422, '验证码错误');
-        }
+        return User::verifyCode($data);
     }
 
 
@@ -254,7 +257,7 @@ class AuthController extends BaseWxController
     public function follow(Request $request) {
         $data = $request->only('user_id');
         $message = [
-            'user_id' => ':attribute 不能为空',
+            'required' => ':attribute 不能为空',
         ];
         $validator = Validator::make($data, [
             'user_id'    => 'required',
@@ -294,7 +297,7 @@ class AuthController extends BaseWxController
         return $this->message(['message' => '已退出登录']);
     }
 
-    public function officialAccountLogin(Request $request)
+    public function officialAccountH5Login(Request $request)
     {
         $token = time().rand(100000,999999);
         $sess = new Sess;
@@ -306,7 +309,7 @@ class AuthController extends BaseWxController
 
         $url = $this->wx->getCodeUrl(0, 'action=login&session_id=' . $token);
 
-        return $this->message(['url' => $url, 'session_id' => $sess->id]);
+        return $this->message(['url' => $url, 'session_id' => $token]);
     }
 
     public function officialShouquan(Request $request) {
@@ -321,7 +324,7 @@ class AuthController extends BaseWxController
             return $this->errorMessage(422, $validator->errors()->first());
         };
 
-        $sess = Sess::find($data['session_id']);
+        $sess = Sess::where('token', $data['session_id'])->where('app_id', $this->app_id)->first();
         if (empty($sess)) {
             return $this->errorMessage(410, '二维码无效');
         }
@@ -351,12 +354,125 @@ class AuthController extends BaseWxController
             ], WxUser::setSession($wx_user)
             );
         } elseif($sess->status == 0) {
-            return $this->errorMessage(202, '尚未扫码');
+            return $this->errorMessage(202, '尚未使用');
         } else {
             return $this->errorMessage(410, '无法使用');
         }
 
     }
+
+    public function officialAccountMobileAuth(Request $request)
+    {
+        $callback_url = $request->input('callback_url');
+        if (empty($callback_url)) {
+            return $this->errorMessage(500, 'callback_url不能为空');
+        }
+        $res = $this->ew_app->oauth->scopes(['snsapi_userinfo'])
+            ->redirect($callback_url);
+        return $this->message(['url' => $res]);
+    }
+
+//    public function OfficialAccountCallback(Request $request) {
+//        $data = $request->only('app_id', 'code', 'state');
+//        $message = [
+//            'required' => ':attribute 不能为空',
+//        ];
+//        $validator = Validator::make($data, [
+//            'code'    => 'required',
+//            'app_id'    => 'required',
+//        ], $message);
+//        if ($validator->fails()) {
+//            return $this->errorMessage(422, $validator->errors()->first());
+//        };
+//        $app = WXService::getApp($data['app_id']);
+//        $off_user = $app->oauth->userFromCode($data['code'])->getRaw();
+//        if (empty($off_user['openid'])) {
+//            return $this->errorMessage(500, '连接微信失败');
+//        }
+//        return WxUser::wxOffLogin($off_user, $data['app_id']);
+//    }
+
+    public function OfficialAccountLogin(Request $request) {
+        $wx_user = $this->wx_user;
+        if (!empty($wx_user)) {
+            $user = User::find($wx_user->user_id);
+            if (empty($user)) {
+                return $this->message(new \ArrayObject(), WxUser::setSession($wx_user));
+            }
+            return $this->message([
+                'access_token' => auth(config('smartx.auth_guard'))->login($user),
+                'ttl' => User::getTTL(),
+                'refresh_ttl' => User::getRefreshTTL(),
+                'user' => $user
+            ], WxUser::setSession($wx_user));
+        }
+        $data = $request->only('code', 'state');
+        if (empty($data['code'])) {
+            return $this->errorMessage(500, 'code 不能为空');
+        }
+        if (empty($data['state'])) {
+            return $this->errorMessage(500, 'state 不能为空');
+        }
+
+
+        $off_user = $this->ew_app->oauth->userFromCode($data['code'])->getRaw();
+        if (empty($off_user['openid'])) {
+            return $this->errorMessage(500, '连接微信失败');
+        }
+        return WxUser::wxOffLogin($off_user, $this->app_id);
+    }
+
+    public function addPhone(Request $request) {
+        $data = $request->only('phone', 'verify_code', 'action');
+        $message = [
+            'required' => ':attribute 不能为空',
+        ];
+        $validator = Validator::make($data, [
+            'phone'    => 'required',
+            'verify_code'    => 'required',
+            'action'    => 'required',
+        ], $message);
+        if ($validator->fails()) {
+            return $this->errorMessage(422, $validator->errors()->first());
+        };
+        if (!CommonService::verifPhone($data['phone'])) {
+            return $this->errorMessage(422, '无效的手机号');
+        };
+        $result = VerifyCodeService::verify($data['action'], $data['phone'], $data['verify_code']);
+        if ($result === 1) {
+            $user = User::where('phone', $data['phone'])->first();
+            if  (!empty($user)) {
+                WxUser::where('id', $this->wx_user->id)->update(['user_id'=> $user->id]);
+            } else {
+                $user = new User();
+                $user->id = Id::getId($data['phone']);
+                $user->name    = $this->wx_user->nickname;
+                $user->avatar    = str_replace('http://', 'https://', $this->wx_user->headimgurl);
+                $user->created_at = date('Y-m-d H:i:s');
+                $user->phone = $data['phone'];
+                $user->username = $data['phone'];
+                $user->password = Hash::make($data['phone']);
+                $user->save();
+            }
+            $user = User::find($user->id);
+            if (empty($user)) {
+                return $this->errorMessage(500, '注册失败，请重试');
+            } else {
+                return $this->message([
+                    'access_token' => auth(config('smartx.auth_guard'))->login($user),
+                    'ttl' => User::getTTL(),
+                    'refresh_ttl' => User::getRefreshTTL(),
+                    'user' => $user
+                ], WxUser::setSession($this->wx_user));
+            }
+        } elseif ($result === 2) {
+            return $this->errorMessage(400, '验证码过期');
+        } else {
+            return $this->errorMessage(400, '验证码无效');
+        }
+
+    }
+
 
 
 }
