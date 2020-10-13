@@ -313,6 +313,7 @@ class AuthController extends BaseWxController
     }
 
     public function officialShouquan(Request $request) {
+        \Log::info($request);
         $data = $request->only('session_id');
         $message = [
             'required' => ':attribute 不能为空',
@@ -326,11 +327,11 @@ class AuthController extends BaseWxController
 
         $sess = Sess::where('token', $data['session_id'])->where('app_id', $this->app_id)->first();
         if (empty($sess)) {
-            return $this->errorMessage(410, '二维码无效');
+            return $this->errorMessage(410, '二维码无效3');
         }
         if (!empty($sess->logintime)) {
             Sess::where('id', $sess->id)->update(['status' => 9]);
-            return $this->errorMessage(410, '二维码无效');
+            return $this->errorMessage(410, '二维码无效4');
         }
         if ((time() - strtotime($sess->addtime) - 1800) > 0) {
             Sess::where('id', $sess->id)->update(['status' => 2]);
