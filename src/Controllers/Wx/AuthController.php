@@ -313,7 +313,6 @@ class AuthController extends BaseWxController
     }
 
     public function officialShouquan(Request $request) {
-        \Log::info($request);
         $data = $request->only('session_id');
         $message = [
             'required' => ':attribute 不能为空',
@@ -327,20 +326,20 @@ class AuthController extends BaseWxController
 
         $sess = Sess::where('token', $data['session_id'])->where('app_id', $this->app_id)->first();
         if (empty($sess)) {
-            return $this->errorMessage(410, '二维码无效3');
+            return $this->errorMessage(200, new \ArrayObject(['status' => 410, 'message'=>'二维码无效']));
         }
         if (!empty($sess->logintime)) {
             Sess::where('id', $sess->id)->update(['status' => 9]);
-            return $this->errorMessage(410, '二维码无效4');
+            return $this->errorMessage(200, new \ArrayObject(['status' => 410, 'message'=>'二维码无效']));
         }
         if ((time() - strtotime($sess->addtime) - 1800) > 0) {
             Sess::where('id', $sess->id)->update(['status' => 2]);
-            return $this->errorMessage(410, '二维码已过期');
+            return $this->errorMessage(200, new \ArrayObject(['status' => 410, 'message'=>'二维码无效']));
         }
         if ($sess->status == 1) {
             $wx_user = WxUser::find($sess->wx_user_id);
             if (empty($wx_user)) {
-                return $this->errorMessage(500, '微信用户未创建');
+                return $this->errorMessage(500, '服务器错误');
             }
             $user = User::find($wx_user->user_id);
             if (empty($user)) {
@@ -355,9 +354,9 @@ class AuthController extends BaseWxController
             ], WxUser::setSession($wx_user)
             );
         } elseif($sess->status == 0) {
-            return $this->errorMessage(202, '尚未使用');
+            return $this->errorMessage(200, new \ArrayObject(['status' => 202, 'message'=>'尚未使用']));
         } else {
-            return $this->errorMessage(410, '无法使用');
+            return $this->errorMessage(200, new \ArrayObject(['status' => 410, 'message'=>'二维码无效']));
         }
 
     }

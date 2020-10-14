@@ -59,6 +59,7 @@ class WxUser extends Model
             $wx_user->remark = $user['remark'];
             $wx_user->app_id = $app_id;
             $wx_user->session_key = md5($user['openid']);
+            $wx_user->subscribe = 1;
         } else {
             if (empty($wx_user->unionid) && !empty($user['unionid'])) {
                 $wx_user->unionid = $user['unionid'];
@@ -66,8 +67,14 @@ class WxUser extends Model
             $wx_user->nickname = $user['nickname'];
             $wx_user->headimgurl = $user['headimgurl'];
         }
+        if (!empty($wx_user->unionid)) {
+            $other_user = self::where('unionid', $wx_user->unionid)->where('app_id', '!=', $app_id)->where('user_id', '>', 0)->first();
+            if (!empty($other_user)) {
+                $wx_user->user_id = $other_user->user_id;
+            }
+        }
         $wx_user->save();
-        $wx_user = self::find($wx_user->id);
+        $wx_user::find($wx_user->id);
         return $wx_user;
     }
 
@@ -111,7 +118,7 @@ class WxUser extends Model
         return $this->sessionKey;
     }
 
-    protected function wxOffLogin($off_user, $app_id, $session_id) {
+    protected function wxOffLogin($off_user, $app_id) {
         $wx_user = self::where('openid', $off_user['openid'])->where('app_id', $app_id)->first();
         if (empty($wx_user)) {
             $wx_user = new WxUser();
@@ -123,52 +130,30 @@ class WxUser extends Model
             $wx_user->sex = $off_user['sex'];
             if (!empty($off_user['unionid'])) {
                 $mini_user = self::where('unionid', $off_user['unionid'])->where('app_id', $app_id)->first();
-                if (!empty($mini_user)) {
+                if (!empty($mini_user) && !empty($mini_user->user_id)) {
                     $wx_user->user_id = $mini_user->user_id;
-                    $off_user['session_key'] = $mini_user->session_key;
                 }
             }
-
+            $wx_user->session_key = md5($wx_user->openid);
         }
 
         if (empty($wx_user->unionid) && !empty($off_user['unionid'])) {
             //unionid只赋值一次
             $wx_user->unionid = $off_user['unionid'];
         }
-        $wx_user->session_key = empty($off_user['session_key']) ? md5($wx_user->openid):$off_user['session_key'];
+
         $wx_user->save();
-
-        return view('off.user.confirm', [
-            'wx_user_id' => $wx_user->id,
-            'session_id' => $session_id
-        ]);
-
-
 
         $user = User::find($wx_user->user_id);
         if (empty($user)) {
-            if (!empty($session_id)) {
-                Sess::where('token', $session_id)->where('app_id', $app_id)->update(['status' => 1, 'wx_user_id'=>$wx_user->id]);
-            }
-            return view('off.user.confirm', [
-                'wx_user_id' => $wx_user->id
-            ]);
-//            return $this->message([], self::setSession($wx_user));
+            return $this->message(new \ArrayObject(), self::setSession($wx_user));
         }
-        if (!empty($session_id)) {
-            Sess::where('token', $session_id)->where('app_id', $app_id)->update(['status' => 1, 'wx_user_id'=>$wx_user->id, 'userid'=> $user->id]);
-        }
-        return view('off.user.confirm', [
-            'wx_user_id' => $wx_user->id,
-            'user_id'=> $user->id
-        ]);
-//        return $this->message([
-//            'access_token' => auth(config('smartx.auth_guard'))->login($user),
-//            'ttl' => User::getTTL(),
-//            'refresh_ttl' => User::getRefreshTTL(),
-//            'user' => $user
-//        ], self::setSession($wx_user)
-//        );
+        return $this->message([
+            'access_token' => auth(config('smartx.auth_guard'))->login($user),
+            'ttl' => User::getTTL(),
+            'refresh_ttl' => User::getRefreshTTL(),
+            'user' => $user
+        ], self::setSession($wx_user));
 
     }
 
