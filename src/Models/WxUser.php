@@ -59,7 +59,6 @@ class WxUser extends Model
             $wx_user->remark = $user['remark'];
             $wx_user->app_id = $app_id;
             $wx_user->session_key = md5($user['openid']);
-            $wx_user->subscribe = 1;
         } else {
             if (empty($wx_user->unionid) && !empty($user['unionid'])) {
                 $wx_user->unionid = $user['unionid'];
@@ -67,18 +66,18 @@ class WxUser extends Model
             $wx_user->nickname = $user['nickname'];
             $wx_user->headimgurl = $user['headimgurl'];
         }
-        if (!empty($wx_user->unionid)) {
+        $wx_user->subscribe = empty($user['subscribe']) ? 0:1;
+        if (!empty($wx_user->unionid) && $wx_user->user_id == 0) {
             $other_user = self::where('unionid', $wx_user->unionid)->where('app_id', '!=', $app_id)->where('user_id', '>', 0)->first();
             if (!empty($other_user)) {
                 $wx_user->user_id = $other_user->user_id;
             }
         }
         $wx_user->save();
-        $wx_user::find($wx_user->id);
-        return $wx_user;
+        return $wx_user::find($wx_user->id);
     }
 
-
+    //小程序登录
     protected function wxLogin($session, $app_id, $inviter_id = 0) {
         $wx_user = self::where('openid', $session['openid'])->where('app_id', $app_id)->first();
         if (empty($wx_user)) {
@@ -95,6 +94,14 @@ class WxUser extends Model
             $wx_user->unionid = $session['unionid'];
         }
         $wx_user->session_key = $session['session_key'];
+
+        if (!empty($wx_user->unionid) && $wx_user->user_id == 0) {
+            $other_user = self::where('unionid', $wx_user->unionid)->where('app_id', '!=', $app_id)->where('user_id', '>', 0)->first();
+            if (!empty($other_user)) {
+                $wx_user->user_id = $other_user->user_id;
+            }
+        }
+
         $wx_user->save();
 
         $user = User::find($wx_user->user_id);
