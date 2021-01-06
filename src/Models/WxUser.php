@@ -86,7 +86,6 @@ class WxUser extends Model
             $wx_user->openid = $session['openid'];
             $wx_user->app_id = $app_id;
             $wx_user->nickname = '';
-            $wx_user->inviter_id = $inviter_id;
             $wx_user->headimgurl = '';
         }
         if (empty($wx_user->unionid) && !empty($session['unionid'])) {

@@ -178,5 +178,21 @@ class CommonService
         return false;
     }
 
+    //身份证打码
+    public static function messyIdCard($id_card) {
+        if (empty($id_card)) {
+            return '';
+        }
+        return substr_replace($id_card, '********', 6, 8);
+    }
+
+    //身份证打码
+    public static function messyPhone($phone) {
+        if (empty($phone)) {
+            return '';
+        }
+        return substr_replace($phone, '***', 3, 4);
+    }
+
 
 }

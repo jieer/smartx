@@ -14,6 +14,11 @@ use App\Models\Sess;
 use SmartX\Services\VerifyCodeService;
 use SmartX\Models\Id;
 use Illuminate\Support\Facades\Hash;
+use EasyWeChat\Kernel\Support\File;
+use Storage;
+use App\Models\Qrcode;
+use App\Services\AliyunOssService;
+use App\Services\Yun\CompanyService;
 
 class AuthController extends BaseWxController
 {
@@ -72,7 +77,7 @@ class AuthController extends BaseWxController
         if (empty($wx_user)) {
             return $this->errorMessage(201, '请先登录');
         }
-        $data = $request->only('encryptedData', 'iv');
+        $data = $request->only('encryptedData', 'iv', 'inviter_id');
         $message = [
             'required' => ':attribute 不能为空',
         ];
@@ -350,7 +355,8 @@ class AuthController extends BaseWxController
                 'access_token' => auth(config('smartx.auth_guard'))->login($user),
                 'ttl' => User::getTTL(),
                 'refresh_ttl' => User::getRefreshTTL(),
-                'user' => $user
+                'user' => $user,
+                'domain' => CompanyService::getEncryptDomain($user->company_id)
             ], WxUser::setSession($wx_user)
             );
         } elseif($sess->status == 0) {
@@ -410,9 +416,9 @@ class AuthController extends BaseWxController
         if (empty($data['code'])) {
             return $this->errorMessage(500, 'code 不能为空');
         }
-        if (empty($data['state'])) {
-            return $this->errorMessage(500, 'state 不能为空');
-        }
+//        if (empty($data['state'])) {
+//            return $this->errorMessage(500, 'state 不能为空');
+//        }
 
 
         $off_user = $this->ew_app->oauth->userFromCode($data['code'])->getRaw();
@@ -471,6 +477,61 @@ class AuthController extends BaseWxController
             return $this->errorMessage(400, '验证码无效');
         }
 
+    }
+
+    public function getQrCode(Request $request) {
+        $data = $request->only('type','scene_id', 'path', 'scene', 'optional', 'width');
+        $message = [
+            'required' => ':attribute 不能为空',
+            'numeric' => ':attribute 必须为数字'
+        ];
+        $validator = Validator::make($data, [
+            'type'    => 'required|numeric',
+        ], $message);
+        if ($validator->fails()) {
+            return $this->errorMessage(422, $validator->errors()->first());
+        };
+        $qrcode = Qrcode::where('type', $data['type'])
+            ->where('app_id', $this->app_id)
+            ->where('optional', json_encode($data, true))
+            ->first();
+        if (!empty($qrcode)) {
+            return $this->message([
+                'qrcode_url' => AliyunOssService::signUrl($qrcode->path, '')
+            ]);
+        }
+        if (empty($data['type'])) {
+            //数量多的临时小程序码
+            //optional中应该包含page参数指向小程序页面
+            $res = $this->wx->getMiniCodeB($data['scene'], $data['optional']);
+        } elseif ($data['type'] === 1) {
+            //永久小程序码
+            $res = $this->wx->getMiniCodeA($data['path'], $data['optional']);
+        } else {
+            //二维码
+            $res = $this->wx->getMiniQrCode($data['path'], empty($data['width']));
+
+        }
+
+        if ($res instanceof \EasyWeChat\Kernel\Http\StreamResponse) {
+            $contents = $res->getBody()->getContents();
+            $filename = md5($contents);
+            $filename .= File::getStreamExt($contents);
+            $path = 'qrcode/' . $this->app_id . '/' . date('YmdHis') . '/' . $filename;
+
+            Storage::put($path, $contents);
+            Qrcode::insert([
+                'type' => $data['type'],
+                'app_id' => $this->app_id,
+                'path' => $path,
+                'optional' => json_encode($data, true)
+            ]);
+            return $this->message([
+                'qrcode_url' => AliyunOssService::signUrl($path, '')
+            ]);
+        } else {
+            return $this->errorMessage($res['errcode']. $res['errmsg']);
+        }
     }
 
 
