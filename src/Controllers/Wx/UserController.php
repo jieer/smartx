@@ -22,7 +22,7 @@ class UserController extends BaseWxController
             'user_id'    => 'required|numeric',
         ], $message);
         if ($validator->fails()) {
-            return $this->errorMessage(422, $validator->errors()->first());
+            return $this->errorMessage(400, $validator->errors()->first());
         };
         $user_follows = SmxUserFollow::where('user_id', $data['user_id'])->orderBy('created_at', 'desc')->get();
         $user_ids = [];
@@ -44,7 +44,7 @@ class UserController extends BaseWxController
             'user_id'    => 'required|numeric',
         ], $message);
         if ($validator->fails()) {
-            return $this->errorMessage(422, $validator->errors()->first());
+            return $this->errorMessage(400, $validator->errors()->first());
         };
         $user_follows = SmxUserFollow::where('source_user_id', $data['user_id'])->orderBy('created_at', 'desc')->get();
         $user_ids = [];

@@ -43,16 +43,16 @@ class User extends Authenticatable implements JWTSubject
 
     protected function registerUser($data) {
         if (!CommonService::verifPhone($data['phone'])) {
-            return $this->errorMessage(422, '手机号格式不正确');
+            return $this->errorMessage(400, '手机号格式不正确');
         }
         $old_user = self::where('phone', $data['phone'])->first();
         if (!empty($old_user)) {
-            return $this->errorMessage(422, '该手机号已被注册，请使用手机号直接登录');
+            return $this->errorMessage(400, '该手机号已被注册，请使用手机号直接登录');
         }
 
         $old_user = self::where('username', $data['username'])->first();
         if (!empty($old_user)) {
-            return $this->errorMessage(422, '用户名不可用，已被使用');
+            return $this->errorMessage(400, '用户名不可用，已被使用');
         }
         $data['password'] = Hash::make($data['password'] );
         $user_id = self::insertGetId($data);
@@ -64,7 +64,7 @@ class User extends Authenticatable implements JWTSubject
         if ($token) {
             return $this->message(['access_token' => $token]);
         } else {
-            return $this->errorMessage(500, '登录失败。请重新登录');
+            return $this->errorMessage(401, '登录失败。请重新登录');
         }
     }
 
@@ -133,16 +133,16 @@ class User extends Authenticatable implements JWTSubject
     protected function completeUser($session, $app_id, $data)
     {
         if (!CommonService::verifPhone($data['phone'])) {
-            return $this->errorMessage(422, '手机号格式不正确');
+            return $this->errorMessage(400, '手机号格式不正确');
         }
         $old_user = self::where('phone', $data['phone'])->first();
         if (!empty($old_user)) {
-            return $this->errorMessage(422, '该手机号已被注册，请使用手机号直接登录');
+            return $this->errorMessage(400, '该手机号已被注册，请使用手机号直接登录');
         }
 
         $old_user = self::where('username', $data['username'])->first();
         if (!empty($old_user)) {
-            return $this->errorMessage(422, '用户名不可用，已被使用');
+            return $this->errorMessage(400, '用户名不可用，已被使用');
         }
         $data['password'] = Hash::make($data['password']);
         unset($data['code']);
@@ -170,7 +170,7 @@ class User extends Authenticatable implements JWTSubject
         if ($token) {
             return $this->message(['access_token' => $token]);
         } else {
-            return $this->errorMessage(500, '登录失败。请重新登录');
+            return $this->errorMessage(401, '登录失败。请重新登录');
         }
     }
 

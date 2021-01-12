@@ -18,7 +18,6 @@ use EasyWeChat\Kernel\Support\File;
 use Storage;
 use App\Models\Qrcode;
 use App\Services\AliyunOssService;
-use App\Services\Yun\CompanyService;
 
 class AuthController extends BaseWxController
 {
@@ -38,7 +37,7 @@ class AuthController extends BaseWxController
             'name'    => 'required',
         ], $message);
         if ($validator->fails()) {
-            return $this->errorMessage(422, $validator->errors()->first());
+            return $this->errorMessage(400, $validator->errors()->first());
         };
         return User::registerUser($data);
     }
@@ -57,7 +56,7 @@ class AuthController extends BaseWxController
             'password'    => 'required',
         ], $message);
         if ($validator->fails()) {
-            return $this->errorMessage(422, $validator->errors()->first());
+            return $this->errorMessage(400, $validator->errors()->first());
         };
         $token = $this->auth->attempt($data);
 
@@ -75,7 +74,7 @@ class AuthController extends BaseWxController
     {
         $wx_user = $this->wx_user;
         if (empty($wx_user)) {
-            return $this->errorMessage(201, '请先登录');
+            return $this->errorMessage(401, '请先登录');
         }
         $data = $request->only('encryptedData', 'iv', 'inviter_id');
         $message = [
@@ -86,7 +85,7 @@ class AuthController extends BaseWxController
             'iv'    => 'required',
         ], $message);
         if ($validator->fails()) {
-            return $this->errorMessage(422, $validator->errors()->first());
+            return $this->errorMessage(400, $validator->errors()->first());
         };
         $data['session_key'] = $wx_user->session_key;
         return $this->wx->phoneBind($data);
@@ -98,7 +97,7 @@ class AuthController extends BaseWxController
     public function completeUser(Request $request) {
         $wx_user = $this->wx_user;
         if (empty($wx_user)) {
-            return $this->errorMessage(201, '请先登录');
+            return $this->errorMessage(401, '请先登录');
         }
         $data = $request->only('encryptedData', 'iv');
         $message = [
@@ -109,7 +108,7 @@ class AuthController extends BaseWxController
             'iv'    => 'required',
         ], $message);
         if ($validator->fails()) {
-            return $this->errorMessage(422, $validator->errors()->first());
+            return $this->errorMessage(400, $validator->errors()->first());
         };
         $data['session_key'] = $wx_user->session_key;
         return $this->wx->completeUser($data);
@@ -129,10 +128,10 @@ class AuthController extends BaseWxController
             'action'    => 'required',
         ], $message);
         if ($validator->fails()) {
-            return $this->errorMessage(422, $validator->errors()->first());
+            return $this->errorMessage(400, $validator->errors()->first());
         };
         if (!CommonService::verifPhone($data['phone'])) {
-            return $this->errorMessage(422, '无效的手机号');
+            return $this->errorMessage(400, '无效的手机号');
         };
 
         return User::getVerifyCode($data);
@@ -153,7 +152,7 @@ class AuthController extends BaseWxController
             'action'    => 'required',
         ], $message);
         if ($validator->fails()) {
-            return $this->errorMessage(422, $validator->errors()->first());
+            return $this->errorMessage(400, $validator->errors()->first());
         };
         return User::verifyCode($data);
     }
@@ -171,7 +170,7 @@ class AuthController extends BaseWxController
             'code'    => 'required',
         ], $message);
         if ($validator->fails()) {
-            return $this->errorMessage(422, $validator->errors()->first());
+            return $this->errorMessage(400, $validator->errors()->first());
         };
 
         return $this->wx->wxLogin($data);
@@ -189,7 +188,7 @@ class AuthController extends BaseWxController
             'code'    => 'required',
         ], $message);
         if ($validator->fails()) {
-            return $this->errorMessage(422, $validator->errors()->first());
+            return $this->errorMessage(400, $validator->errors()->first());
         };
 
         return $this->wx->bindUser($data['code'], $this->auth->user()->id);
@@ -207,7 +206,7 @@ class AuthController extends BaseWxController
             'code'    => 'required',
         ], $message);
         if ($validator->fails()) {
-            return $this->errorMessage(422, $validator->errors()->first());
+            return $this->errorMessage(400, $validator->errors()->first());
         };
         return $this->wx->relieveBind($data['code']);
     }
@@ -226,7 +225,7 @@ class AuthController extends BaseWxController
             'code'    => 'required',
         ], $message);
         if ($validator->fails()) {
-            return $this->errorMessage(422, $validator->errors()->first());
+            return $this->errorMessage(400, $validator->errors()->first());
         };
         return $this->wx->relieveBind($data['code']);
     }
@@ -268,7 +267,7 @@ class AuthController extends BaseWxController
             'user_id'    => 'required',
         ], $message);
         if ($validator->fails()) {
-            return $this->errorMessage(422, $validator->errors()->first());
+            return $this->errorMessage(400, $validator->errors()->first());
         };
         $user = User::find($data['user_id']);
         if (empty($user) || $user->id == $this->auth->user()->id) {
@@ -326,7 +325,7 @@ class AuthController extends BaseWxController
             'session_id'    => 'required',
         ], $message);
         if ($validator->fails()) {
-            return $this->errorMessage(422, $validator->errors()->first());
+            return $this->errorMessage(400, $validator->errors()->first());
         };
 
         $sess = Sess::where('token', $data['session_id'])->where('app_id', $this->app_id)->first();
@@ -348,7 +347,7 @@ class AuthController extends BaseWxController
             }
             $user = User::find($wx_user->user_id);
             if (empty($user)) {
-                return $this->message([], WxUser::setSession($wx_user));
+                return $this->message((object)null, WxUser::setSession($wx_user));
             }
             Sess::where('id', $sess->id)->update(['userid' => $user->id]);
             return $this->message([
@@ -356,7 +355,6 @@ class AuthController extends BaseWxController
                 'ttl' => User::getTTL(),
                 'refresh_ttl' => User::getRefreshTTL(),
                 'user' => $user,
-                'domain' => CompanyService::getEncryptDomain($user->company_id)
             ], WxUser::setSession($wx_user)
             );
         } elseif($sess->status == 0) {
@@ -388,7 +386,7 @@ class AuthController extends BaseWxController
 //            'app_id'    => 'required',
 //        ], $message);
 //        if ($validator->fails()) {
-//            return $this->errorMessage(422, $validator->errors()->first());
+//            return $this->errorMessage(400, $validator->errors()->first());
 //        };
 //        $app = WXService::getApp($data['app_id']);
 //        $off_user = $app->oauth->userFromCode($data['code'])->getRaw();
@@ -439,10 +437,10 @@ class AuthController extends BaseWxController
             'action'    => 'required',
         ], $message);
         if ($validator->fails()) {
-            return $this->errorMessage(422, $validator->errors()->first());
+            return $this->errorMessage(400, $validator->errors()->first());
         };
         if (!CommonService::verifPhone($data['phone'])) {
-            return $this->errorMessage(422, '无效的手机号');
+            return $this->errorMessage(400, '无效的手机号');
         };
         $result = VerifyCodeService::verify($data['action'], $data['phone'], $data['verify_code']);
         if ($result === 1) {
@@ -489,7 +487,7 @@ class AuthController extends BaseWxController
             'type'    => 'required|numeric',
         ], $message);
         if ($validator->fails()) {
-            return $this->errorMessage(422, $validator->errors()->first());
+            return $this->errorMessage(400, $validator->errors()->first());
         };
         $qrcode = Qrcode::where('type', $data['type'])
             ->where('app_id', $this->app_id)

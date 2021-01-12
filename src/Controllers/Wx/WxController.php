@@ -21,7 +21,7 @@ class WxController extends BaseWxController
             'type'    => 'required|numeric',
         ], $message);
         if ($validator->fails()) {
-            return $this->errorMessage(422, $validator->errors()->first());
+            return $this->errorMessage(400, $validator->errors()->first());
         };
 
         if (empty($data['type'])) {
