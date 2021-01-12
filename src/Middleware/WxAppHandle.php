@@ -4,6 +4,7 @@ namespace SmartX\Middleware;
 
 use Closure;
 use SmartX\Controllers\BaseReturnTrait;
+use SmartX\Models\WxApp;
 
 class WxAppHandle
 {
@@ -18,13 +19,17 @@ class WxAppHandle
     public function handle($request, Closure $next)
     {
         $value = $request->cookie('app_id');
+        if (empty($value)) {
+            $value = $request->header('APPID');
+        }
         if (!empty($value)) {
             $request->session()->regenerate();
             $request->session()->put('app_id', $value);
         }
         $value = $request->session()->get('app_id');
-        if (empty($value)) {
-            return $this->errorMessage(401,'该应用未认证');
+        $app = WxApp::find($value);
+        if (empty($app)) {
+            return $this->errorMessage(403,'该应用未认证');
         }
         return $next($request);
     }
