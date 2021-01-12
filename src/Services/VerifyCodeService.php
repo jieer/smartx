@@ -34,13 +34,6 @@ class VerifyCodeService
         if (empty($verify)) {
             return 0;
         }
-        //测试用验证码
-        if ($verify->ttl == 0) {
-            return 1;
-        } else {
-            return 2;
-        }
-
         if (time() - strtotime($verify->created_at) > $verify->ttl) {
             return 2;
         }
