@@ -7,6 +7,7 @@ use SmartX\Models\WxApp;
 use SmartX\Models\WxUser;
 use SmartX\WX\Wx;
 use SmartX\Controllers\BaseController;
+use EasyWeChat\Factory;
 
 class BaseWxController extends BaseController
 {
@@ -16,6 +17,7 @@ class BaseWxController extends BaseController
     private $wx;
     private $sessionKey;
     private $wx_user;
+    private $ew_app;
 
     public function __get($name)
     {
@@ -36,7 +38,26 @@ class BaseWxController extends BaseController
         $this->app_id = empty(session('app_id')) ? 0:session('app_id');
         $this->wx_app = WxApp::find($this->app_id);
         $this->wx = new Wx($this->wx_app);
+        $this->setEwApp();
 
+    }
+
+    protected function setEwApp() {
+        $config = [
+            'app_id' => $this->wx_app->appid,
+            'secret' => $this->wx_app->secret,
+            'token' => $this->wx_app->token,
+            'aes_key' => $this->wx_app->aes_key,
+            'response_type' => 'array',
+        ];
+
+        if ($this->wx_app->type == 1) {
+            $this->ew_app = Factory::miniProgram($config);
+        } elseif($this->wx_app->type == 2) {
+            $this->ew_app = Factory::openPlatform($config);
+        } else {
+            $this->ew_app = Factory::officialAccount($config);
+        }
     }
 
     protected function wxUser() {
@@ -63,7 +84,7 @@ class BaseWxController extends BaseController
         return false;
     }
 
-    public function message($data = [], $sessionKey = '') {
+    public function message($data, $sessionKey = '') {
         $result = array(
             "code" => 200,
             "message" => '',

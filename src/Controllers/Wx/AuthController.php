@@ -347,7 +347,7 @@ class AuthController extends BaseWxController
             }
             $user = User::find($wx_user->user_id);
             if (empty($user)) {
-                return $this->message((object)null, WxUser::setSession($wx_user));
+                return $this->message([], WxUser::setSession($wx_user));
             }
             Sess::where('id', $sess->id)->update(['userid' => $user->id]);
             return $this->message([
@@ -358,9 +358,9 @@ class AuthController extends BaseWxController
             ], WxUser::setSession($wx_user)
             );
         } elseif($sess->status == 0) {
-            return $this->errorMessage(200, new \ArrayObject(['status' => 202, 'message'=>'尚未使用']));
+            return $this->message((object)null);
         } else {
-            return $this->errorMessage(200, new \ArrayObject(['status' => 410, 'message'=>'二维码无效']));
+            return $this->message(410, '二维码无效');
         }
 
     }
