@@ -13,4 +13,9 @@ class WxApp extends Model
         parent::__construct($attributes);
         $this->table = config('smartx.database.wx_app_table');
     }
+
+    public static function getDefault()
+    {
+        return (object)null;
+    }
 }
