@@ -117,16 +117,16 @@ class User extends Authenticatable implements JWTSubject
      */
     protected function getVerifyCode($data)
     {
-//        $verify_code = VerifyCodeService::generate($data['action'], $data['phone'], 300, 6, 1);
-        //发送验证码
-//        $ret = VerifyCodeService::sendCms($data['phone'], $verify_code);
-//        if (empty($ret)) {
-//            return $this->message((object)null);
-//        } else {
-//            return $this->errorMessage(500, $ret);
-//        }
+        $verify_code = VerifyCodeService::generate($data['action'], $data['phone'], 300, 6, 1);
+//        发送验证码
+        $ret = VerifyCodeService::sendCms($data['phone'], $verify_code);
+        if (empty($ret)) {
+            return $this->message((object)null);
+        } else {
+            return $this->errorMessage(500, $ret);
+        }
         //虚拟验证码
-        return $this->message((object)null);
+//        return $this->message((object)null);
     }
 
 
