@@ -4,7 +4,7 @@ namespace SmartX\Controllers;
 
 trait BaseReturnTrait
 {
-    public function message($data, $sessionKey = '') {
+    public function message($data = [], $sessionKey = '') {
         $result = array(
             "code" => 200,
             "message" => '',
