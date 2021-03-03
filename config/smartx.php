@@ -10,7 +10,7 @@ return [
 
         'common_user_table' => 'common_user',
 
-        'user_group_table' => 'user_group',
+        'user_club_table' => 'user_club',
 
         'wx_app_table' => 'wx_app',
 
@@ -25,22 +25,22 @@ return [
             'select' => ['id','phone', 'name'],
             'modules' => ['id','username', 'phone', 'name', 'avatar', 'created_at']
         ],
-        'user_group' => [
-            'model' => SmartX\Models\UserGroup::class,
-            'select' => ['id','type', 'group_name'],
-            'modules' => ['id','type', 'group_name', 'min_credit', 'max_credit', 'icon_path', 'created_at']
+        'user_club' => [
+            'model' => SmartX\Models\UserClub::class,
+            'select' => ['id','type', 'name'],
+            'modules' => ['id', 'name', 'icon_path', 'created_at']
         ],
         'wx_app' => [
             'model' => SmartX\Models\WxApp::class,
             'select' => ['id','appid', 'name', 'type'],
             'modules' => ['id','appid', 'name', 'type', 'secret', 'token',
-                'aes_key', 'mch_id', 'notify', 'remark', 'created_at']
+                          'aes_key', 'mch_id', 'notify', 'remark', 'created_at']
         ],
         'wx_user' => [
             'model' => SmartX\Models\WxUser::class,
             'select' => ['id', 'app_id', 'user_id', 'nickname', 'sex'],
             'modules' => ['id', 'app_id', 'user_id', 'openid', 'unionid',
-                'nickname', 'headimgurl', 'sex', 'remark', 'label', 'is_black', 'created_at']
+                          'nickname', 'headimgurl', 'sex', 'remark', 'label', 'is_black', 'created_at']
         ]
 
     ],
