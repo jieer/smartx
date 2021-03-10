@@ -54,10 +54,11 @@ class VerifyCodeService
                 ],
             ]);
         } catch (NoGatewayAvailableException $e) {
-            \Log::channel('sms')->info($e->getException('aliyun'));
-            $res = $e->getException('aliyun')->raw;
-            if ($res['Code'] == 'isv.MOBILE_NUMBER_ILLEGAL') {
-                return '手机号无效';
+            $errors = $e->getResults();
+            if (count($errors) > 0) {
+                foreach ($errors as $error) {
+                    \Log::channel('sms')->info($error['exception']['raw']);
+                }
             }
             return '系统错误，发送失败';
         }
