@@ -1,71 +1,110 @@
 <?php
 
-return [
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-    'auth_guard' => 'wx',
+class CreateSmartXTables extends Migration
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function getConnection()
+    {
+        return config('smartx.database.connection') ?: config('database.default');
+    }
 
-    'database' => [
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        //smx_common_user
+        Schema::dropIfExists(config('smartx.database.common_user_table'));
+        Schema::create(config('smartx.database.common_user_table'), function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('company_id')->default(0);
+            $table->tinyInteger('group_id')
+                ->unsigned()
+                ->default(5)
+                ->comment(
+                    '1、站长，具有所有权限
+                     2、编辑，主要针对内容
+                     3、企业，身份
+                     4、VIP，身份
+                     5、普通，身份
+                     6、游客，登录用
+                     7、黑名单，不可登录'
+                );
+            $table->tinyInteger('level')->unsigned()->default(0);
+            $table->string('username', 190)->unique();
+            $table->string('phone', 190)->unique();
+            $table->string('password', 60);
+            $table->string('name');
+            $table->string('avatar')->nullable();
+            $table->integer('score')->default(0);
+            $table->tinyInteger('can_follow')->unsigned()->default(1);
+            $table->integer('sale_id')->default(0);
+            $table->string('remember_token', 200)->nullable();
+            $table->integer('vip_id')->default(0);
+            $table->string('vip_name', 45)->default('');
+            $table->string('self_introduction', 200)->default('');
+            $table->string('vip_introduction', 64)->default('');
+            $table->timestamps();
+        });
+        //smx_wx_app
+        Schema::dropIfExists(config('smartx.database.wx_app_table'));
+        Schema::create(config('smartx.database.wx_app_table'), function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('appid', 190)->unique();
+            $table->string('name', 64)->unique();
+            $table->string('secret', 190)->unique();
+            $table->string('token', 60);
+            $table->string('aes_key', 190)->nullable();
+            $table->string('mch_id')->nullable();
+            $table->string('msg_notify', 200)->nullable();
+            $table->string('pay_notify', 200)->nullable();
+            $table->text('auth_reply')->nullable();
+            $table->tinyInteger('type')->unsigned()->default(0)->comment('应用类型 0未知 1小程序 2APP 3公众号');
+            $table->string('remark', 200)->nullable();
+            $table->tinyInteger('is_default')->unsigned()->default(0);
+            $table->timestamps();
+        });
+        //smx_wx_user
+        Schema::dropIfExists(config('smartx.database.wx_user_table'));
+        Schema::create(config('smartx.database.wx_user_table'), function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('app_id')->default(0);
+            $table->integer('user_id')->default(0);
+            $table->string('openid', 200)->unique();
+            $table->string('unionid', 200)->nullable();
+            $table->string('nickname', 100)->default('');
+            $table->string('headimgurl', 255)->dafault('');
+            $table->tinyInteger('sex')->unsigned()->default(0)->comment('1男2女0未知');
+            $table->text('remark')->nullable();
+            $table->string('label', 200)->nullable();
+            $table->tinyInteger('is_black')->default(0);
+            $table->integer('country_code')->nullable();
+            $table->string('city', 45)->nullable();
+            $table->string('province', 45)->nullable();
+            $table->string('country', 45)->nullable();
+            $table->tinyInteger('subscribe')->unsigned()->default(0);
+            $table->string('session_key', 64)->nullable();
+            $table->timestamps();
+        });
+    }
 
-        'connection' => '',
-
-        'common_user_table' => 'common_user',
-
-        'user_club_table' => 'common_user_group',
-
-        'wx_app_table' => 'wx_app',
-
-        'wx_user_table' => 'wx_user',
-
-        'user_id_table' => 'user_id',
-
-    ],
-    'models' => [
-        'common_user' => [
-            'model' => SmartX\Models\User::class,
-            'select' => ['id','phone', 'name'],
-            'modules' => ['id','username', 'phone', 'name', 'avatar', 'created_at']
-        ],
-        'common_user_club' => [
-            'model' => SmartX\Models\UserClub::class,
-            'select' => ['id','type', 'name'],
-            'modules' => ['id', 'name', 'icon_path', 'allow_browse', 'allow_posted', 'allow_comment', 'allow_delete', 'created_at']
-        ],
-        'wx_app' => [
-            'model' => SmartX\Models\WxApp::class,
-            'select' => ['id','appid', 'name', 'type'],
-            'modules' => ['id','appid', 'name', 'type', 'secret', 'token',
-                          'aes_key', 'mch_id', 'notify', 'remark', 'created_at']
-        ],
-        'wx_user' => [
-            'model' => SmartX\Models\WxUser::class,
-            'select' => ['id', 'app_id', 'user_id', 'nickname', 'sex'],
-            'modules' => ['id', 'app_id', 'user_id', 'openid', 'unionid',
-                          'nickname', 'headimgurl', 'sex', 'remark', 'label', 'is_black', 'created_at']
-        ]
-
-    ],
-    'directory' => [
-        'controller' => app_path('Http/Controllers/Wx'),
-    ],
-
-    'route' => [
-
-        'prefix' => 'wx',
-
-        'namespace' => 'App\\Http\\Controllers\\Wx',
-
-        'middleware' => ['api', 'smartx'],
-    ],
-    'report_reason' => [
-        '5'  => '欺诈',
-        '10' => '色情',
-        '15' => '诱导行为',
-        '20' => '不实信息',
-        '25' => '违法犯罪',
-        '30' => '骚扰',
-        '35' => '其他',
-    ],
-
-
-
-];
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists(config('smartx.database.wx_user_table'));
+        Schema::dropIfExists(config('smartx.database.wx_app_table'));
+        Schema::dropIfExists(config('smartx.database.common_user_table'));
+    }
+}
