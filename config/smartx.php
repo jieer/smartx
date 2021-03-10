@@ -10,7 +10,7 @@ return [
 
         'common_user_table' => 'common_user',
 
-        'user_club_table' => 'user_club',
+        'user_club_table' => 'common_user_group',
 
         'wx_app_table' => 'wx_app',
 
@@ -25,10 +25,10 @@ return [
             'select' => ['id','phone', 'name'],
             'modules' => ['id','username', 'phone', 'name', 'avatar', 'created_at']
         ],
-        'user_club' => [
+        'common_user_club' => [
             'model' => SmartX\Models\UserClub::class,
             'select' => ['id','type', 'name'],
-            'modules' => ['id', 'name', 'icon_path', 'created_at']
+            'modules' => ['id', 'name', 'icon_path', 'allow_browse', 'allow_posted', 'allow_comment', 'allow_delete', 'created_at']
         ],
         'wx_app' => [
             'model' => SmartX\Models\WxApp::class,

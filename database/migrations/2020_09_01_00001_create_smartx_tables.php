@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSmartXTables extends Migration
+class CreateFolderTables extends Migration
 {
     /**
      * {@inheritdoc}
@@ -21,10 +21,10 @@ class CreateSmartXTables extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists(config('smartx.database.common_user_table'));
-        Schema::create(config('smartx.database.common_user_table'), function (Blueprint $table) {
+        Schema::dropIfExists('folder');
+        Schema::create('folder', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('username', 190)->unique();
+            $table->integer('user_id')->unsigned();
             $table->string('phone', 190)->unique();
             $table->string('password', 60);
             $table->string('name');

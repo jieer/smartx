@@ -23,8 +23,12 @@ class SmartXJWTAuth
     {
 
         try {
-            if (! auth(config('smartx.auth_guard'))->user()) {
+            $user = auth(config('smartx.auth_guard'))->user();
+            if (!$user ) {
                 return $this->errorMessage(401,'访问受限，未认证');
+            }
+            if ($user->group_id == 7) {
+                return $this->errorMessage(401,'访问受限，您已被拉黑，详情请咨询客服');
             }
             return $next($request);
 

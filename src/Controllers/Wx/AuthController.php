@@ -234,7 +234,7 @@ class AuthController extends BaseWxController
     {
         $id = $request->input('user_id');
 
-        $user = User::find($id, ['id','level','name', 'avatar', 'can_follow']);
+        $user = User::find($id, ['id','level','name', 'avatar', 'can_follow', 'vip_id', 'vip_name']);
 
         if (empty($user)) {
             return $this->message($user);
