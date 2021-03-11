@@ -2,9 +2,9 @@
 
 namespace SmartX\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use SmartX\Models\BaseModel;
 
-class UserClub extends Model
+class UserClub extends BaseModel
 {
     protected $table;
 

@@ -2,12 +2,11 @@
 
 namespace SmartX\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use SmartX\Controllers\BaseReturnTrait;
 use App\Models\Sess;
-use SmartX\Models\User;
+use SmartX\Models\BaseModel;
 
-class WxUser extends Model
+class WxUser extends BaseModel
 {
     use BaseReturnTrait;
 

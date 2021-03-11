@@ -2,9 +2,9 @@
 
 namespace SmartX\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use SmartX\Models\BaseModel;
 
-class WxApp extends Model
+class WxApp extends BaseModel
 {
     protected $table;
 
@@ -16,6 +16,13 @@ class WxApp extends Model
 
     public static function getDefault()
     {
-        return (object)null;
+        $app = self::where('is_default', 1)->first();
+        if (empty($app)) {
+            return self::find(1);
+        }
+        if (empty($app)) {
+            return null;
+        }
+        return $app;
     }
 }
