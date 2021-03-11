@@ -445,9 +445,7 @@ class AuthController extends BaseWxController
         $result = VerifyCodeService::verify($data['action'], $data['phone'], $data['verify_code']);
         if ($result === 1) {
             $user = User::where('phone', $data['phone'])->first();
-            if  (!empty($user)) {
-                WxUser::where('id', $this->wx_user->id)->update(['user_id'=> $user->id]);
-            } else {
+            if (empty($user)) {
                 $user = new User();
                 $user->id = Id::getId($data['phone']);
                 $user->name    = $this->wx_user->nickname;
@@ -458,10 +456,10 @@ class AuthController extends BaseWxController
                 $user->password = Hash::make($data['phone']);
                 $user->save();
             }
-            $user = User::find($user->id);
             if (empty($user)) {
                 return $this->errorMessage(500, '注册失败，请重试');
             } else {
+                WxUser::where('id', $this->wx_user->id)->update(['user_id'=> $user->id]);
                 return $this->message([
                     'access_token' => auth(config('smartx.auth_guard'))->login($user),
                     'ttl' => User::getTTL(),
