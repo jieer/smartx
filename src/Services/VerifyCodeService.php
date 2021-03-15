@@ -42,12 +42,11 @@ class VerifyCodeService
 
     public static function sendCms($phone, $code)
     {
-
         $easySms = new EasySms(config('smartx.phone_verify_code_send_config'));
 
         try {
             $easySms->send($phone, [
-                'content'  => "您的验证码为: $code",
+                'content'  => "验证码：$code ，您正在登录，若非本人操作，请勿泄露。",
                 'template' => 'SMS_208715038',
                 'data' => [
                     'code' => $code
@@ -56,8 +55,10 @@ class VerifyCodeService
         } catch (NoGatewayAvailableException $e) {
             $errors = $e->getResults();
             if (count($errors) > 0) {
-                foreach ($errors as $error) {
-                    \Log::channel('sms')->info($error['exception']['raw']);
+                foreach ($errors as $k => $error) {
+                    \Log::channel('sms')->info([
+                        $k => $error['exception']->raw
+                    ]);
                 }
             }
             return '系统错误，发送失败';
