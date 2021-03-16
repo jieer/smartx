@@ -130,9 +130,9 @@ class AuthController extends BaseWxController
         if ($validator->fails()) {
             return $this->errorMessage(400, $validator->errors()->first());
         };
-        if (!CommonService::verifPhone($data['phone'])) {
-            return $this->errorMessage(400, '无效的手机号');
-        };
+//        if (!CommonService::verifPhone($data['phone'])) {
+//            return $this->errorMessage(400, '无效的手机号');
+//        };
 
         return User::getVerifyCode($data);
     }
@@ -349,6 +349,7 @@ class AuthController extends BaseWxController
             if (empty($user)) {
                 return $this->message([], WxUser::setSession($wx_user));
             }
+            $user->is_moderator = $user->isModerator();
             Sess::where('id', $sess->id)->update(['userid' => $user->id]);
             return $this->message([
                 'access_token' => auth(config('smartx.auth_guard'))->login($user),
@@ -403,6 +404,7 @@ class AuthController extends BaseWxController
             if (empty($user)) {
                 return $this->message(new \ArrayObject(), WxUser::setSession($wx_user));
             }
+            $user->is_moderator = $user->isModerator();
             return $this->message([
                 'access_token' => auth(config('smartx.auth_guard'))->login($user),
                 'ttl' => User::getTTL(),
@@ -460,6 +462,7 @@ class AuthController extends BaseWxController
                 return $this->errorMessage(500, '注册失败，请重试');
             } else {
                 WxUser::where('id', $this->wx_user->id)->update(['user_id'=> $user->id]);
+                $user->is_moderator = $user->isModerator();
                 return $this->message([
                     'access_token' => auth(config('smartx.auth_guard'))->login($user),
                     'ttl' => User::getTTL(),

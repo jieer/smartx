@@ -195,4 +195,12 @@ class User extends Authenticatable implements JWTSubject
         return $user->name;
     }
 
+    public function isModerator()
+    {
+        if ($this->group_id == 1 || $this->group_id == 2) {
+            return 1;
+        }
+        return 0;
+    }
+
 }
