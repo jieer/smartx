@@ -20,7 +20,7 @@ class WxPay
             'app_id' => $wx_app->appid,
             'mch_id' => $wx_app->mch_id,
             'key' => $wx_app->aes_key,
-            'notify_url' => $wx_app->notify,
+            'notify_url' => url($wx_app->pay_notify),
             'response_type' => 'array',
         ];
         $app = Factory::payment($config);

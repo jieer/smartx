@@ -150,6 +150,33 @@ class Wx
     }
 
     /*
+    * 完善用户信息
+    */
+    public function completeUserNew($data) {
+        $wx_user = WxUser::where('session_key', $data['session_key'])->first();
+        if (empty($wx_user)) {
+            return $this->errorMessage(400, '该用户未注册');
+        }
+        $wx_user->nickname = $data['nickName'];
+        $wx_user->headimgurl = $data['avatarUrl'];
+        $wx_user->city = empty($data['city']) ? '':$data['city'];
+        $wx_user->province = empty($data['province']) ? '':$data['province'];
+        $wx_user->country = empty($data['country']) ? '':$data['country'];
+        $wx_user->sex = empty($data['gender']) ? 0:$data['gender'];
+        $wx_user->save();
+
+        $user = User::where('id', $wx_user->user_id)->first(['id', 'username', 'phone', 'name', 'avatar', 'created_at']);
+        if (!empty($user)) {
+            $user->name   = $data['nickName'];
+            $user->avatar = $data['avatarUrl'];
+            $user->save();
+        }
+        $wx_user = WxUser::where('session_key', $data['session_key'])->first(['id', 'nickname', 'headimgurl']);
+
+        return $this->message($wx_user);
+    }
+
+    /*
      * 微信登录(用户未登录)
      */
     public function wxLogin($data) {
@@ -158,7 +185,6 @@ class Wx
         if (array_key_exists('errcode', $session)) {
             return $this->errorMessage($session['errcode'], $session['errmsg']);
         }
-
         return WxUser::wxLogin($session, $this->wx_app->id, $data['inviter_id'] ?? 0);
     }
 

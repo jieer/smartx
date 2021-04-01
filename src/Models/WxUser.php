@@ -108,9 +108,9 @@ class WxUser extends BaseModel
         }
         return $this->message([
             'access_token' => auth(config('smartx.auth_guard'))->login($user),
-            'ttl' => User::getTTL(),
-            'refresh_ttl' => User::getRefreshTTL(),
-            'user' => $user
+            'ttl'          => User::getTTL(),
+            'refresh_ttl'  => User::getRefreshTTL(),
+            'user'         => $user
         ], self::setSession($wx_user)
         );
     }

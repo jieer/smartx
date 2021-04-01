@@ -115,6 +115,31 @@ class AuthController extends BaseWxController
     }
 
     /*
+     * 新版本完善用户
+     */
+    public function completeUserNew(Request $request) {
+        $wx_user = $this->wx_user;
+        if (empty($wx_user)) {
+            return $this->errorMessage(401, '请先登录');
+        }
+        $data = $request->only('avatarUrl', 'city', 'country', 'nickName', 'province', 'gender');
+        $message = [
+            'required' => ':attribute 不能为空',
+        ];
+        $validator = Validator::make($data, [
+            'avatarUrl'    => 'required',
+            'nickName'    => 'required',
+        ], $message);
+        if ($validator->fails()) {
+            return $this->errorMessage(400, $validator->errors()->first());
+        };
+        $data['session_key'] = $wx_user->session_key;
+        return $this->wx->completeUserNew($data);
+    }
+
+
+
+    /*
      * 获取手机验证码
      */
     public function getVerifyCode(Request $request)
