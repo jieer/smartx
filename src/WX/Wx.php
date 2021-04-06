@@ -205,6 +205,7 @@ class Wx
         } else {
             $user->wx_user = [];
         }
+        $user->is_moderator = $user->isModerator();
         return $this->message($user);
     }
 

@@ -106,6 +106,7 @@ class WxUser extends BaseModel
         if (empty($user)) {
             return $this->message([], self::setSession($wx_user));
         }
+        $user->is_moderator = $user->isModerator();
         return $this->message([
             'access_token' => auth(config('smartx.auth_guard'))->login($user),
             'ttl'          => User::getTTL(),
