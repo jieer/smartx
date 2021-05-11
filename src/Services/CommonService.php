@@ -3,9 +3,19 @@
 namespace SmartX\Services;
 
 use DateTime;
+use SmartX\Models\User;
 
 class CommonService
 {
+    public static function generateUserName()
+    {
+        $name = config('smartx.default_user_name_pre') . '_' .  self::createNonceStr(8);
+        $user = User::where('name', $name)->first();
+        if (!empty($user)) {
+            return self::generateUserName();
+        }
+        return $name;
+    }
     //生成一个随机数
     public static function createNonceStr($length = 16) {
         $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

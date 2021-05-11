@@ -10,6 +10,7 @@ use SmartX\Models\User;
 use SmartX\Controllers\BaseReturnTrait;
 use Illuminate\Support\Facades\Hash;
 use App\Services\CommonUserService;
+use SmartX\Services\CommonService;
 
 class Wx
 {
@@ -93,7 +94,7 @@ class Wx
         if (empty($user)) {
             $new_user = new User;
             $new_user->id = $user_id;
-            $new_user->name    = $wx_user->nickname;
+            $new_user->name    = CommonService::generateUserName();
             $new_user->avatar    = str_replace('http://', 'https://', $wx_user->headimgurl);
             $new_user->created_at = date('Y-m-d H:i:s');
             $new_user->phone = $phone;
@@ -136,9 +137,6 @@ class Wx
 
         $user = User::where('id', $wx_user->user_id)->first(['id', 'username', 'phone', 'name', 'avatar', 'created_at']);
         if (!empty($user)) {
-            if (!empty($decrypted['nickName'])) {
-                $user->name = $decrypted['nickName'];
-            }
             if (!empty($decrypted['avatarUrl'])) {
                 $user->avatar = $decrypted['avatarUrl'];
             }
@@ -167,7 +165,6 @@ class Wx
 
         $user = User::where('id', $wx_user->user_id)->first(['id', 'username', 'phone', 'name', 'avatar', 'created_at']);
         if (!empty($user)) {
-            $user->name   = $data['nickName'];
             $user->avatar = $data['avatarUrl'];
             $user->save();
         }
