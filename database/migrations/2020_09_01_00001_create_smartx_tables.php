@@ -21,6 +21,27 @@ class CreateSmartXTables extends Migration
      */
     public function up()
     {
+        //smx_user_id
+        Schema::dropIfExists(config('smartx.database.user_id_table'));
+        Schema::create(config('smartx.database.user_id_table'), function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('phone', 24)->unique();
+            $table->timestamps();
+        });
+
+        //smx_common_user_group
+        Schema::dropIfExists(config('smartx.database.user_group_table'));
+        Schema::create(config('smartx.database.user_group_table'), function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name', 64)->unique();
+            $table->string('icon_path', 255)->default('');
+            $table->boolean('allow_browse')->unsigned()->default(0);
+            $table->boolean('allow_posted')->unsigned()->default(0);
+            $table->boolean('allow_comment')->unsigned()->default(0);
+            $table->boolean('allow_delete')->unsigned()->default(0);
+            $table->timestamps();
+        });
+
         //smx_common_user
         Schema::dropIfExists(config('smartx.database.common_user_table'));
         Schema::create(config('smartx.database.common_user_table'), function (Blueprint $table) {
@@ -28,16 +49,7 @@ class CreateSmartXTables extends Migration
             $table->integer('company_id')->default(0);
             $table->tinyInteger('group_id')
                 ->unsigned()
-                ->default(5)
-                ->comment(
-                    '1、站长，具有所有权限
-                     2、编辑，主要针对内容
-                     3、企业，身份
-                     4、VIP，身份
-                     5、普通，身份
-                     6、游客，登录用
-                     7、黑名单，不可登录'
-                );
+                ->default(5);
             $table->tinyInteger('level')->unsigned()->default(0);
             $table->string('username', 190)->unique();
             $table->string('phone', 190)->unique();
