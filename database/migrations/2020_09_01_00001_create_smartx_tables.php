@@ -106,6 +106,19 @@ class CreateSmartXTables extends Migration
             $table->string('session_key', 64)->nullable();
             $table->timestamps();
         });
+
+        Schema::dropIfExists(config('smartx.database.verify_code_table'));
+        Schema::create(config('smartx.database.verify_code_table'), function (Blueprint $table)
+        {
+            $table->increments('id');
+            $table->string('phone', 45);
+            $table->string('code', 32);
+            $table->string('action', 45)->default('login')->comment('场景');
+            $table->integer('ttl')->unsigned()->default(300)->comment('过期时间s');
+            $table->boolean('usable')->default(1)->comment('是否可用 0否 1是');
+            $table->boolean('strategy')->default(0)->comment('验证策略 0，生成新的后旧的可使用 1，生成新的后旧的不可使用');
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+        });
     }
 
     /**
@@ -115,8 +128,10 @@ class CreateSmartXTables extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists(config('smartx.database.user_id_table'));
         Schema::dropIfExists(config('smartx.database.wx_user_table'));
         Schema::dropIfExists(config('smartx.database.wx_app_table'));
         Schema::dropIfExists(config('smartx.database.common_user_table'));
+        Schema::dropIfExists(config('smartx.database.verify_code_table'));
     }
 }

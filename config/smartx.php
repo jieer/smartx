@@ -18,6 +18,8 @@ return [
 
         'user_id_table' => 'user_id',
 
+        'verify_code_table' => 'common_verify_code',
+
     ],
     'models' => [
         'common_user' => [
