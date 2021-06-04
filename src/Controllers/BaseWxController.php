@@ -60,6 +60,18 @@ class BaseWxController extends BaseController
         }
     }
 
+    protected function userId() {
+        return intval($this->auth->id());
+    }
+
+    protected function wx_id() {
+        $wx_user = $this->wxUser();
+        if (empty($wx_user)) {
+            return 0;
+        }
+        return $wx_user->id;
+    }
+
     protected function wxUser() {
         if (!empty($this->wx_user)) {
             return $this->wx_user;
