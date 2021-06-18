@@ -5,6 +5,7 @@ namespace SmartX\Models;
 use SmartX\Controllers\BaseReturnTrait;
 use App\Models\Sess;
 use SmartX\Models\BaseModel;
+use SmartX\Services\CommonService;
 
 class WxUser extends BaseModel
 {
@@ -102,9 +103,55 @@ class WxUser extends BaseModel
 
         $wx_user->save();
 
-        $user = User::find($wx_user->user_id);
+        $user = User::userInfo($wx_user->user_id);
         if (empty($user)) {
             return $this->message([], self::setSession($wx_user));
+        }
+        $user->is_moderator = $user->isModerator();
+        return $this->message([
+            'access_token' => auth(config('smartx.auth_guard'))->login($user),
+            'ttl'          => User::getTTL(),
+            'refresh_ttl'  => User::getRefreshTTL(),
+            'user'         => $user
+        ], self::setSession($wx_user)
+        );
+    }
+
+    //小程序登录
+    protected function wxLoginAndCreateUser($session, $app_id, $inviter_id = 0) {
+        $wx_user = self::where('openid', $session['openid'])->where('app_id', $app_id)->first();
+        if (empty($wx_user)) {
+            $wx_user = new WxUser();
+            $wx_user->user_id = 0;
+            $wx_user->openid = $session['openid'];
+            $wx_user->app_id = $app_id;
+            $wx_user->nickname = '';
+            $wx_user->headimgurl = '';
+        }
+        if (empty($wx_user->unionid) && !empty($session['unionid'])) {
+            //unionid只赋值一次
+            $wx_user->unionid = $session['unionid'];
+        }
+        $wx_user->session_key = $session['session_key'];
+
+        if (!empty($wx_user->unionid) && $wx_user->user_id == 0) {
+            $other_user = self::where('unionid', $wx_user->unionid)->where('app_id', '!=', $app_id)->where('user_id', '>', 0)->first();
+            if (!empty($other_user)) {
+                $wx_user->user_id = $other_user->user_id;
+            }
+        }
+
+        $wx_user->save();
+
+        $user = User::userInfo($wx_user->user_id);
+        if (empty($user)) {
+            $username = CommonService::generateUserName();
+            $user = User::create([
+                "username" =>  $username,
+                "phone" =>  null,
+                "name" =>  $username,
+            ]);
+
         }
         $user->is_moderator = $user->isModerator();
         return $this->message([

@@ -185,8 +185,20 @@ class Wx
         return WxUser::wxLogin($session, $this->wx_app->id, $data['inviter_id'] ?? 0);
     }
 
+    /*
+    * 微信登录(同时创建用户)
+    */
+    public function wxLoginAndCreateUser($data) {
+        $session = $this->ew_app->auth->session($data['code']);
+
+        if (array_key_exists('errcode', $session)) {
+            return $this->errorMessage($session['errcode'], $session['errmsg']);
+        }
+        return WxUser::wxLoginAndCreateUser($session, $this->wx_app->id, $data['inviter_id'] ?? 0);
+    }
+
     public function userInfo() {
-        $user = auth(config('smartx.auth_guard'))->user();
+        $user = User::userInfo(auth(config('smartx.auth_guard'))->user()->id);
         $wx_users = WxUser::where('user_id', $user->id)->get(['openid', 'unionid', 'nickname', 'headimgurl', 'city', 'province', 'country']);
         if (!empty($wx_users) && count($wx_users) > 0) {
             foreach ($wx_users as $wx_user) {

@@ -200,6 +200,24 @@ class AuthController extends BaseWxController
 
         return $this->wx->wxLogin($data);
     }
+    /*
+     * 微信登录
+     */
+    public function wxLoginAndCreateUser(Request $request) {
+        $data = $request->only('code', 'inviter_id');
+        $message = [
+            'required' => ':attribute 不能为空',
+        ];
+        $validator = Validator::make($data, [
+            'code'    => 'required',
+        ], $message);
+        if ($validator->fails()) {
+            return $this->errorMessage(400, $validator->errors()->first());
+        };
+
+        return $this->wx->wxLoginAndCreateUser($data);
+    }
+
 
     /*
      * 微信绑定
@@ -337,7 +355,6 @@ class AuthController extends BaseWxController
         $sess->save();
 
         $url = $this->wx->getCodeUrl(0, 'action=login&session_id=' . $token);
-
         return $this->message(['url' => $url, 'session_id' => $token]);
     }
 

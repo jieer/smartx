@@ -41,6 +41,16 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
+    public static function userInfo($id)
+    {
+        $user        = User::find($id, ['id', 'phone', 'group_id', 'name', 'avatar', 'score', 'vip_id', 'vip_name', 'vip_introduction', 'self_introduction']);
+        if (empty($user)) {
+            return null;
+        }
+        $user->phone = CommonService::messyPhone($user->phone);
+        return $user;
+    }
+
     protected function registerUser($data) {
         if (!CommonService::verifPhone($data['phone'])) {
             return $this->errorMessage(400, '手机号格式不正确');
@@ -56,7 +66,7 @@ class User extends Authenticatable implements JWTSubject
         }
         $data['password'] = Hash::make($data['password'] );
         $user_id = self::insertGetId($data);
-        $user = self::find($user_id);
+        $user = self::userInfo($user_id);
         if (empty($user)) {
             return $this->errorMessage(500, '注册失败');
         }
@@ -75,18 +85,12 @@ class User extends Authenticatable implements JWTSubject
     {
         $user = self::where('phone', $data['phone'])->first();
         if (empty($user)) {
-            $user = new User();
-            $user->username = $data['phone'];
-            $user->phone = $data['phone'];
-            $user->password = Hash::make($data['phone']);
-            $user->save();
-
             $user_id = self::insertGetId([
                 'username' => $data['phone'],
                 'phone' => $data['phone'],
                 'password' => Hash::make($data['phone']),
             ]);
-            $user = self::find($user_id);
+            $user = self::userInfo($user_id);
         }
         $token = auth(config('smartx.auth_guard'))->login($user);
         if ($token) {
@@ -147,7 +151,7 @@ class User extends Authenticatable implements JWTSubject
         $data['password'] = Hash::make($data['password']);
         unset($data['code']);
         $user_id = self::insertGetId($data);
-        $user = self::find($user_id);
+        $user = self::userInfo($user_id);
         if (empty($user)) {
             return $this->errorMessage(500, '保存失败');
         }
