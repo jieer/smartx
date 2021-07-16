@@ -201,7 +201,7 @@ class CommonService
         if (empty($phone)) {
             return '';
         }
-        return substr_replace($phone, '***', 3, 4);
+        return substr_replace($phone, '****', 3, 4);
     }
 
 

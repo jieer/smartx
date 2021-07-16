@@ -102,6 +102,7 @@ class Wx
             $new_user->password = Hash::make($phone);
             $new_user->save();
             $user = User::find($user_id);
+            CommonUserService::registerUser($user_id);
             if (!empty($data['inviter_id'])) {
                 CommonUserService::inviterUser($user_id, $data['inviter_id']);
             }
