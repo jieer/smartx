@@ -19,7 +19,7 @@ class WxPay
         $config = [
             'app_id' => $wx_app->appid,
             'mch_id' => $wx_app->mch_id,
-            'key' => $wx_app->aes_key,
+            'key' => $wx_app->mch_key,
             'notify_url' => url($wx_app->pay_notify),
             'response_type' => 'array',
         ];

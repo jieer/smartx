@@ -75,6 +75,7 @@ class CreateSmartXTables extends Migration
             $table->string('secret', 190)->unique();
             $table->string('token', 60);
             $table->string('aes_key', 190)->nullable();
+            $table->string('mch_key', 190)->nullable();
             $table->string('mch_id')->nullable();
             $table->string('msg_notify', 200)->nullable();
             $table->string('pay_notify', 200)->nullable();
