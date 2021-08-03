@@ -47,7 +47,7 @@ class VerifyCodeService
         try {
             $easySms->send($phone, [
                 'content'  => "验证码：$code ，您正在登录，若非本人操作，请勿泄露。",
-                'template' => 'SMS_208715038',
+                'template' => config('smartx.phone_verify_code_send_template'),
                 'data' => [
                     'code' => $code
                 ],
