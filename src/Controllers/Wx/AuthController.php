@@ -492,7 +492,7 @@ class AuthController extends BaseWxController
             if (empty($user)) {
                 $user = new User();
                 $user->id = Id::getId($data['phone']);
-                $user->name    = $this->wx_user->nickname;
+                $user->name    = CommonService::generateUserName();
                 $user->avatar    = str_replace('http://', 'https://', $this->wx_user->headimgurl);
                 $user->created_at = date('Y-m-d H:i:s');
                 $user->phone = $data['phone'];
