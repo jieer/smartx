@@ -503,6 +503,10 @@ class AuthController extends BaseWxController
             if (empty($user)) {
                 return $this->errorMessage(500, '注册失败，请重试');
             } else {
+                CommonUserService::registerUser($user->id);
+                if (!empty($data['inviter_id'])) {
+                    CommonUserService::inviterUser($user->id, $data['inviter_id']);
+                }
                 WxUser::where('id', $this->wx_user->id)->update(['user_id'=> $user->id]);
                 $user->is_moderator = $user->isModerator();
                 return $this->message([
