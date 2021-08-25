@@ -111,6 +111,9 @@ class Wx
             'user_id' => $user->id,
             'country_code' => $countryCode
         ]);
+        if (!empty($wx_user->unionid)) {
+            WxUser::where('unionid', $wx_user->unionid)->where('user_id', '!=', '')->update(['user_id' => $user->user_id]);
+        }
         return $this->message([
             'access_token' => auth(config('smartx.auth_guard'))->login($user),
             'ttl' => User::getTTL(),
