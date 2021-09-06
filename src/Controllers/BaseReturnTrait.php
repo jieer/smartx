@@ -6,8 +6,10 @@ trait BaseReturnTrait
 {
     public function message($data = [], $sessionKey = '') {
         if (config('smartx.res_log_switch')) {
-            \Log::info('--------成功----------');
-            \Log::info(array(
+            \Log::channel('res_log')->info('--------请求----------');
+            \Log::channel('res_log')->info(request()->all());
+            \Log::channel('res_log')->info('--------成功----------');
+            \Log::channel('res_log')->info(array(
                 "code" => 200,
                 "message" => '',
                 'data' => $data,
@@ -25,8 +27,10 @@ trait BaseReturnTrait
 
     public function errorMessage($code, $message = '',$data = null) {
         if (config('smartx.res_log_switch')) {
-            \Log::info('--------失败----------');
-            \Log::info(array(
+            \Log::channel('res_log')->info('--------请求----------');
+            \Log::channel('res_log')->info(request()->all());
+            \Log::channel('res_log')->info('--------失败----------');
+            \Log::channel('res_log')->info(array(
                 "code" => $code,
                 "message" => $message,
                 'data' => $data,

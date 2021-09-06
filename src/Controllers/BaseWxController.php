@@ -98,8 +98,10 @@ class BaseWxController extends BaseController
 
     public function message($data = [], $sessionKey = '') {
         if (config('smartx.res_log_switch')) {
-            \Log::info('--------成功----------');
-            \Log::info(array(
+            \Log::channel('res_log')->info('--------请求----------');
+            \Log::channel('res_log')->info(request()->all());
+            \Log::channel('res_log')->info('--------成功----------');
+            \Log::channel('res_log')->info(array(
                 "code" => 200,
                 "message" => '',
                 'data' => $data,
