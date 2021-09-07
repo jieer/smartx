@@ -11,7 +11,6 @@ class UserHandel
     use BaseReturnTrait;
     /**
      * Handle an incoming request.
-     *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
      * @return mixed
@@ -28,8 +27,8 @@ class UserHandel
             if (empty($str)) {
                 return $this->errorMessage(401, '未登录, 缺少sessionKey');
             }
-            list($wx_id, $session_key, $timeout) = explode("\t", $str);
-            if (empty($wx_id) || empty($session_key) || ($timeout < time())) {
+            list($wx_id, $timeout) = explode("\t", $str);
+            if (empty($wx_id) || ($timeout < time())) {
                 $request->header('SESSIONKEY', '');
                 return $this->errorMessage(401, '未登录, sessionKey 过期');
             }

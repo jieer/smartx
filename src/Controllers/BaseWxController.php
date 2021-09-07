@@ -34,7 +34,6 @@ class BaseWxController extends BaseController
     }
 
     protected function initParams() {
-
         $this->app_id = empty(session('app_id')) ? 0:session('app_id');
         $this->wx_app = WxApp::find($this->app_id);
         $this->wx = new Wx($this->wx_app);
@@ -97,24 +96,13 @@ class BaseWxController extends BaseController
     }
 
     public function message($data = [], $sessionKey = '') {
-        if (config('smartx.res_log_switch')) {
-            \Log::channel('res_log')->info('--------请求----------');
-            \Log::channel('res_log')->info(request()->all());
-            \Log::channel('res_log')->info('--------成功----------');
-            \Log::channel('res_log')->info(array(
-                "code" => 200,
-                "message" => '',
-                'data' => $data,
-                'sessionKey' => $sessionKey,
-            ));
-        }
         $result = array(
             "code" => 200,
             "message" => '',
             'data' => $data,
             'sessionKey' => empty($sessionKey) ? $this->sessionKey:$sessionKey,
         );
-        return response()->json($result);
+        return $this->output($result);
     }
 
 }

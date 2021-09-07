@@ -165,9 +165,8 @@ class WxUser extends BaseModel
 
     protected function setSession($wxuser) {
         $wx_id = $wxuser->id;
-        $session_key = $wxuser->session_key;
         $timeout = time() + 86400;
-        $this->sessionKey = encrypt("{$wx_id}\t{$session_key}\t{$timeout}");
+        $this->sessionKey = encrypt("{$wx_id}\t{$timeout}");
         return $this->sessionKey;
     }
 
