@@ -1,3 +1,4 @@
 .idea/
 vender/
 composer.lock
+*.DS_Store

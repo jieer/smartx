@@ -82,8 +82,8 @@ class BaseWxController extends BaseController
         if (empty($str)) {
             return false;
         }
-        list($wx_id, $session_key, $timeout) = explode("\t", $str);
-        if (empty($wx_id) || empty($session_key) || ($timeout < time())) {
+        list($wx_id, $timeout) = explode("\t", $str);
+        if (empty($wx_id) || ($timeout < time())) {
             $this->sessionKey = NULL;
             return false;
         }
