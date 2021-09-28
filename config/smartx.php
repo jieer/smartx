@@ -14,6 +14,8 @@ return [
 
         'wx_app_table' => 'wx_app',
 
+        'wx_app_mch_table' => 'wx_app_mch',
+
         'wx_user_table' => 'wx_user',
 
         'user_id_table' => 'user_id',
@@ -36,7 +38,12 @@ return [
             'model' => SmartX\Models\WxApp::class,
             'select' => ['id','appid', 'name', 'type'],
             'modules' => ['id','appid', 'name', 'type', 'secret', 'token',
-                          'aes_key', 'mch_id', 'notify', 'remark', 'created_at']
+                          'aes_key', 'msg_notify', 'remark',  'created_at']
+        ],
+        'wx_app_mch' => [
+            'model' => SmartX\Models\WxAppMch::class,
+            'select' => ['id','appid'],
+            'modules' => ['id','appid', 'mch_id', 'mch_key', 'pay_notify', 'created_at']
         ],
         'wx_user' => [
             'model' => SmartX\Models\WxUser::class,
