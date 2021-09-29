@@ -38,12 +38,12 @@ return [
             'model' => SmartX\Models\WxApp::class,
             'select' => ['id','appid', 'name', 'type'],
             'modules' => ['id','appid', 'name', 'type', 'secret', 'token',
-                          'aes_key', 'msg_notify', 'remark',  'created_at']
+                          'aes_key', 'msg_notify', 'mch_id', 'remark',  'created_at']
         ],
         'wx_app_mch' => [
             'model' => SmartX\Models\WxAppMch::class,
             'select' => ['id','appid'],
-            'modules' => ['id','appid', 'mch_id', 'mch_key', 'pay_notify', 'created_at']
+            'modules' => ['id','mch_id', 'mch_key', 'pay_notify', 'created_at']
         ],
         'wx_user' => [
             'model' => SmartX\Models\WxUser::class,

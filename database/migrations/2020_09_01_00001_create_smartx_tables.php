@@ -76,6 +76,7 @@ class CreateSmartXTables extends Migration
             $table->string('token', 60);
             $table->string('aes_key', 190)->nullable();
             $table->string('msg_notify', 200)->nullable();
+            $table->integer('mch_id')->default(0)->unsigned();
             $table->text('auth_reply')->nullable();
             $table->tinyInteger('type')->unsigned()->default(0)->comment('应用类型 0未知 1小程序 2APP 3公众号');
             $table->string('remark', 200)->nullable();
@@ -86,7 +87,6 @@ class CreateSmartXTables extends Migration
         Schema::dropIfExists(config('smartx.database.wx_app_table'));
         Schema::create(config('smartx.database.wx_app_table'), function (Blueprint $table) {
             $table->increments('id');
-            $table->string('appid', 190)->unique();
             $table->string('mch_key', 190)->nullable();
             $table->string('mch_id')->nullable();
             $table->string('pay_notify', 200)->nullable();
