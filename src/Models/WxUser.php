@@ -145,7 +145,7 @@ class WxUser extends BaseModel
 
         $user = User::userInfo($wx_user->user_id);
         if (empty($user)) {
-            $username = CommonService::generateUserName();
+            $username = config('smartx.use_nickname') ? $wx_user->nickname:CommonService::generateUserName();
             $user = User::create([
                 "username" =>  $username,
                 "phone" =>  null,
