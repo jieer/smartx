@@ -98,7 +98,7 @@ class Wx
             $new_user->avatar    = str_replace('http://', 'https://', $wx_user->headimgurl);
             $new_user->created_at = date('Y-m-d H:i:s');
             $new_user->phone = $phone;
-            $new_user->username = $phone;
+            $new_user->username = config('smartx.use_nickname') ? $wx_user->nickname:CommonService::generateUserName();
             $new_user->password = Hash::make($phone);
             $new_user->save();
             $user = User::find($user_id);
@@ -146,6 +146,7 @@ class Wx
             }
             if (config('smartx.use_nickname')) {
                 $user->name = $decrypted['nickName'];
+                $user->username = $decrypted['nickName'];
             }
             $user->save();
         }
@@ -175,6 +176,7 @@ class Wx
             $user->avatar = $data['avatarUrl'];
             if (config('smartx.use_nickname')) {
                 $user->name = $data['nickName'];
+                $user->username = $decrypted['nickName'];
             }
             $user->save();
         }
