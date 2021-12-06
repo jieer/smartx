@@ -521,7 +521,52 @@ class AuthController extends BaseWxController
         } else {
             return $this->errorMessage(400, '验证码无效');
         }
+    }
 
+    public function updatephone(Request $request) {
+        $data = $request->only('phone', 'verify_code', 'action');
+        $message = [
+            'required' => ':attribute 不能为空',
+        ];
+        $validator = Validator::make($data, [
+            'phone'    => 'required',
+            'verify_code'    => 'required',
+            'action'    => 'required',
+        ], $message);
+        if ($validator->fails()) {
+            return $this->errorMessage(400, $validator->errors()->first());
+        };
+        if (!CommonService::verifPhone($data['phone'])) {
+            return $this->errorMessage(400, '无效的手机号');
+        };
+        $result = VerifyCodeService::verify($data['action'], $data['phone'], $data['verify_code']);
+
+        if ($result === 1) {
+            $user = User::find($this->userId());
+            $other = User::where('phone', $data['phone'])->where('id', '!=', $this->userId())->first();
+            if (!empty($other)) {
+                return $this->errorMessage(500, '该手机号已被使用');
+            }
+            if ($user->phone == $data['phone']) {
+                WxUser::where('id', $this->wx_user->id)->update(['user_id' => $user->id]);
+                return $this->message([]);
+            }
+            $row = User::where('id', $user->id)->update(['phone' => $data['phone']]);
+            if ($row != 1) {
+                return $this->errorMessage(500, '更改失败');
+            }
+            WxUser::where('id', $this->wx_user->id)->update(['user_id'=> $user->id]);
+            return $this->message([
+                'access_token' => auth(config('smartx.auth_guard'))->login($user),
+                'ttl' => User::getTTL(),
+                'refresh_ttl' => User::getRefreshTTL(),
+            ], WxUser::setSession($this->wx_user));
+
+        } elseif ($result === 2) {
+            return $this->errorMessage(400, '验证码过期');
+        } else {
+            return $this->errorMessage(400, '验证码无效');
+        }
     }
 
     public function getQrCode(Request $request) {
