@@ -154,11 +154,14 @@ class AuthController extends BaseWxController
         ], $message);
         if ($validator->fails()) {
             return $this->errorMessage(400, $validator->errors()->first());
-        };
-//        if (!CommonService::verifPhone($data['phone'])) {
-//            return $this->errorMessage(400, '无效的手机号');
-//        };
+        }
+        if (!CommonService::verifPhone($data['phone'])) {
+            return $this->errorMessage(400, '无效的手机号');
+        }
+        if (CommonService::isRepetion($request->getClientIp(), $data['phone'], $data['action'])) {
+            return $this->errorMessage(500, '请于60s之后重新获取');
 
+        }
         return User::getVerifyCode($data);
     }
 

@@ -112,6 +112,7 @@ class CreateSmartXTables extends Migration
         Schema::create(config('smartx.database.verify_code_table'), function (Blueprint $table)
         {
             $table->increments('id');
+            $table->string('ip', 64)->nullable();
             $table->string('phone', 45);
             $table->string('code', 32);
             $table->string('action', 45)->default('login')->comment('场景');

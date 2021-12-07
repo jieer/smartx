@@ -10,6 +10,20 @@ use Overtrue\EasySms\Exceptions\NoGatewayAvailableException;
 class VerifyCodeService
 {
 
+    public static function isRepetion($ip, $phone, $action) {
+        $code = VerifyCode::where('ip', $ip)->where('phone', $phone)->where('usable', 1)->first();
+        if (empty($code)) {
+            $code = VerifyCode::where('phone', $phone)->where('action', $action)->where('usable', 1)->first();
+            if (empty($code)) {
+                return false;
+            }
+        }
+        if (time() - strtotime($code->created_at) < 60) {
+            return true;
+        }
+        return false;
+    }
+
     public static function generate($action, $identify, $second = 300, $length = 4, $strategy = 0)
     {
         $min  = 10 ** ($length - 1);
