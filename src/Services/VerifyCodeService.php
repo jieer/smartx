@@ -37,6 +37,7 @@ class VerifyCodeService
         if (time() - strtotime($verify->created_at) > $verify->ttl) {
             return 2;
         }
+        VerifyCode::where('phone', $identify)->where('action', $action)->where('code', $code)->update(['usable' => 0]);
         return 1;
     }
 
