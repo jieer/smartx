@@ -10,7 +10,7 @@ Route::group([
 
     Route::middleware(['smartx.user'])->group(function () {
         Route::post('completeuser', 'AuthController@completeUser');
-
+        Route::post('completeusernew', 'AuthController@completeUserNew');
     });
     Route::post('register', 'AuthController@registerUser');
 
