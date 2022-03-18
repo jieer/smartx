@@ -27,7 +27,7 @@ Route::group([
 
         Route::post('binduser', 'AuthController@bindUser');
         Route::post('relievebind', 'AuthController@relieveBind');
-        Route::post('userInfo', 'AuthController@userInfo');
+        Route::post('userinfo', 'AuthController@userInfo');
 
         Route::post('qrcode', 'WxController@getQrCode');
     });
