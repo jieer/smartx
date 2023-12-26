@@ -9,6 +9,7 @@
     "php": ">=7.0",
     "laravel/framework": ">=7.0",
     "overtrue/wechat": "^5.0",
+    "jacobcyl/ali-oss-storage": "^2.1",
     "tymon/jwt-auth": "dev-develop"
   },
   "minimum-stability": "dev",
