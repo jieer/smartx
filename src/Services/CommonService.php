@@ -156,13 +156,13 @@ class CommonService
 
             $checkSum = 0;
             for ($i = 0; $i < 17; $i++) {
-                $checkSum += intval($num{$i}) * $factor[$i];
+                $checkSum += intval($num[$i]) * $factor[$i];
             }
 
             $mod   = $checkSum % 11;
             $token = $tokens[$mod];
 
-            $lastChar = strtoupper($num{17});
+            $lastChar = strtoupper($num[17]);
 
             if ($lastChar != $token) {
                 return false;

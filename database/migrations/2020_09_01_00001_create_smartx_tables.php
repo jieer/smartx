@@ -87,8 +87,8 @@ class CreateSmartXTables extends Migration
         Schema::dropIfExists(config('smartx.database.wx_app_mch_table'));
         Schema::create(config('smartx.database.wx_app_mch_table'), function (Blueprint $table) {
             $table->increments('id');
-            $table->string('mch_key', 190)->nullable();
             $table->string('mch_id')->nullable();
+            $table->string('mch_key', 190)->nullable();
             $table->string('pay_notify', 200)->nullable();
             $table->timestamps();
         });
@@ -141,6 +141,7 @@ class CreateSmartXTables extends Migration
         Schema::dropIfExists(config('smartx.database.user_id_table'));
         Schema::dropIfExists(config('smartx.database.wx_user_table'));
         Schema::dropIfExists(config('smartx.database.wx_app_table'));
+        Schema::dropIfExists(config('smartx.database.wx_app_mch_table'));
         Schema::dropIfExists(config('smartx.database.common_user_table'));
         Schema::dropIfExists(config('smartx.database.verify_code_table'));
     }

@@ -9,7 +9,7 @@ use SmartX\Models\Id;
 use SmartX\Models\User;
 use SmartX\Controllers\BaseReturnTrait;
 use Illuminate\Support\Facades\Hash;
-use App\Services\CommonUserService;
+use SmartX\Services\CommonUserService;
 use SmartX\Services\CommonService;
 
 class Wx
@@ -94,11 +94,11 @@ class Wx
         if (empty($user)) {
             $new_user = new User;
             $new_user->id = $user_id;
-            $new_user->name    = CommonService::generateUserName();
+            $new_user->name    = config('smartx.use_nickname') ? $wx_user->nickname:CommonService::generateUserName();
             $new_user->avatar    = str_replace('http://', 'https://', $wx_user->headimgurl);
             $new_user->created_at = date('Y-m-d H:i:s');
             $new_user->phone = $phone;
-            $new_user->username = $phone;
+            $new_user->username = config('smartx.use_nickname') ? $wx_user->nickname:CommonService::generateUserName();
             $new_user->password = Hash::make($phone);
             $new_user->save();
             $user = User::find($user_id);
@@ -144,6 +144,10 @@ class Wx
             if (!empty($decrypted['avatarUrl'])) {
                 $user->avatar = $decrypted['avatarUrl'];
             }
+            if (config('smartx.use_nickname')) {
+                $user->name = $decrypted['nickName'];
+                $user->username = $decrypted['nickName'];
+            }
             $user->save();
         }
         $wx_user = WxUser::where('session_key', $data['session_key'])->first(['id', 'nickname', 'headimgurl']);
@@ -170,6 +174,10 @@ class Wx
         $user = User::where('id', $wx_user->user_id)->first(['id', 'username', 'phone', 'name', 'avatar', 'created_at']);
         if (!empty($user)) {
             $user->avatar = $data['avatarUrl'];
+            if (config('smartx.use_nickname')) {
+                $user->name = $data['nickName'];
+                $user->username = $data['nickName'];
+            }
             $user->save();
         }
         $wx_user = WxUser::where('session_key', $data['session_key'])->first(['id', 'nickname', 'headimgurl']);

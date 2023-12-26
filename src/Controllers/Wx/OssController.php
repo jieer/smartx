@@ -2,7 +2,7 @@
 namespace App\Http\Controllers\Wx;
 
 use Illuminate\Http\Request;
-use App\Services\AliyunOssService;
+use SmartX\Services\AliyunOssService;
 use DateTime;
 use SmartX\Controllers\BaseWxController;
 use App\Services\CrmService;
